@@ -8,8 +8,6 @@ Arduino_GFX *gfx = new Arduino_ILI9341(bus, 9 /* RST */);
 const int screenWidth = 240;
 const int screenHeight = 320;
 
-uint16_t framebuffer[screenWidth * screenHeight];
-
 // Bullet structure
 struct Bullet {
   int x, y;   
@@ -70,6 +68,9 @@ void spawnBullet() {
 void updateBullets() {
   for (int i = 0; i < maxBullets; i++) {
     if (bullets[i].active) {
+      // Erase the current bullet by drawing over it with a white rectangle
+      gfx->fillRect(bullets[i].x, bullets[i].y, bullets[i].width, bullets[i].height, 0xFFFF);
+
       // Update the position
       bullets[i].x += bullets[i].dx;
       bullets[i].y += bullets[i].dy;
@@ -78,32 +79,9 @@ void updateBullets() {
       if (bullets[i].x < -bullets[i].width || bullets[i].x > screenWidth ||
           bullets[i].y < -bullets[i].height || bullets[i].y > screenHeight) {
         bullets[i].active = false;
-      }
-    }
-  }
-}
-
-// Render the framebuffer to the display
-void renderFramebuffer() {
-  gfx->draw16bitRGBBitmap(0, 0, framebuffer, screenWidth, screenHeight);
-}
-
-// Draw all bullets onto the framebuffer
-void drawBulletsToFramebuffer() {
-  // Clear the framebuffer (set to white background)
-  memset(framebuffer, 0xFF, sizeof(framebuffer));
-
-  // Draw all active bullets to the framebuffer
-  for (int i = 0; i < maxBullets; i++) {
-    if (bullets[i].active) {
-      for (int bx = 0; bx < bullets[i].width; bx++) {
-        for (int by = 0; by < bullets[i].height; by++) {
-          int px = bullets[i].x + bx;
-          int py = bullets[i].y + by;
-          if (px >= 0 && px < screenWidth && py >= 0 && py < screenHeight) {
-            framebuffer[py * screenWidth + px] = bullets[i].color;
-          }
-        }
+      } else {
+        // Draw the bullet in its new position
+        gfx->fillRect(bullets[i].x, bullets[i].y, bullets[i].width, bullets[i].height, bullets[i].color);
       }
     }
   }
@@ -112,7 +90,7 @@ void drawBulletsToFramebuffer() {
 void setup() {
   // Initialize the display
   gfx->begin();
-  gfx->setRotation(1);
+  gfx->setRotation(0);
   gfx->fillScreen(0xFFFF); // Set background to white
 
   // Seed the random number generator
@@ -125,14 +103,8 @@ void loop() {
     spawnBullet();
   }
 
-  // Update all bullets
+  // Update and draw all bullets
   updateBullets();
-
-  // Draw all bullets to the framebuffer
-  drawBulletsToFramebuffer();
-
-  // Render the framebuffer to the display
-  renderFramebuffer();
 
   delay(30); // Control animation speed
 }
