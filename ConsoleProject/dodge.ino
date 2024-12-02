@@ -1,15 +1,5 @@
-#include <Arduino_GFX_Library.h>
+#include "GameConsole.h"
 
-/* MOSI: 11 */
-/* SCK: 13 */
-
-// Hardware setup
-Arduino_DataBus *bus = new Arduino_HWSPI(8 /* DC */, 10 /* CS */);
-Arduino_GFX *gfx = new Arduino_ILI9341(bus, 9 /* RST */);
-
-// Constants
-const int screenWidth = 240;
-const int screenHeight = 320;
 const int bulletSize = 12;
 const int playerSize = 16;
 const int bulletSpeed = 2; // px/s
@@ -143,7 +133,7 @@ void drawBullet(Bullet bullet) {
 
 ////////////// Core functions //////////////
 
-void setup() {
+void dodge_setup() {
   Serial.begin(9600);
   while (!Serial);
   gfx->begin();
@@ -152,7 +142,7 @@ void setup() {
   randomSeed(analogRead(0));
 }
 
-void loop() {
+void dodge_loop() {
   if (random(0, 3) < 1) {
     spawnBullet();
   }

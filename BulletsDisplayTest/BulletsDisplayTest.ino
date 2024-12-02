@@ -1,4 +1,5 @@
 #include <Arduino_GFX_Library.h>
+#include <vector>
 
 /* MOSI: 11 */
 /* SCK: 13 */
@@ -10,15 +11,15 @@ const int screenHeight = 320;
 
 // Bullet structure
 struct Bullet {
-  int x, y;   
-  int dx, dy;
-  int width, height;
+  uint16_t x, y;   
+  uint16_t dx, dy;
+  uint16_t width, height;
   uint16_t color;
   bool active; 
 };
 
 // Maximum number of bullets
-const int maxBullets = 50;
+const int maxBullets = 100;
 Bullet bullets[maxBullets];
 
 // Spawn a new bullet along the screen edges
