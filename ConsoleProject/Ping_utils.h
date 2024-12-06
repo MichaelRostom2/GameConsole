@@ -1,4 +1,6 @@
+#pragma once
 #include "utils.h"
+#include "GameConsole.h"
 
 typedef enum
 {
@@ -8,7 +10,8 @@ typedef enum
     sGAME_OVER = 4,
 } PingState;
 
-PingState PingUpdateFSM(Arduino_GFX *gfx, PingState curState, long mils, Joystick_input Joystick_input);
+PingState PingUpdateFSM(PingState curState, Joystick_input Joystick_input);
 void drawBackWall(Arduino_GFX *gfx, int screenWidth, int screenHeight);
 void drawPaddle(Arduino_GFX *gfx, int y);
 void drawBall(Arduino_GFX *gfx, int x, int y);
+void playPing(Joystick_input joystickInput);

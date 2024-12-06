@@ -8,4 +8,5 @@ typedef enum
     sGAME_OVER = 4,
 } DodgeState;
 
-DodgeState DodgeUpdateFSM(Arduino_GFX *gfx, DodgeState curState, Joystick_input Joystick_input);
+// DodgeState DodgeUpdateFSM(Arduino_GFX *gfx, DodgeState curState, Joystick_input Joystick_input);
+// void playDodge(Joystick_input Joystick_input);

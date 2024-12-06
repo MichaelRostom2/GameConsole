@@ -1,23 +1,27 @@
 #pragma once
 #include <Arduino_GFX_Library.h>
+#include "Arduino.h"
+#include "watchdog.h"
+#include "Ping_utils.h"
 /* MOSI: 11 */
 /* SCK: 13 */
 
-enum gameMode {
+enum gameMode
+{
   MENU,
   PING,
   DODGE
 };
 
-enum gameMode currentGame;
+extern gameMode currentGame;
 
 // Hardware setup
-Arduino_DataBus *bus = new Arduino_HWSPI(8 /* DC */, 10 /* CS */);
-Arduino_GFX *gfx = new Arduino_ILI9341(bus, 9 /* RST */);
+extern Arduino_DataBus *bus;
+extern Arduino_GFX *gfx;
 
 // Constants
-const int screenWidth = 240;
-const int screenHeight = 320;
+extern const int screenWidth;
+extern const int screenHeight;
 
 /* Home Functions */
 

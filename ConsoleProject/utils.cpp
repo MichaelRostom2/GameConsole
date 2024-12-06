@@ -25,25 +25,25 @@ Joystick_input pollInputs()
   @param  Joystick_input Latest input from Joystick
   @return New console State
 */
-ConsoleState DodgeUpdateFSM(Arduino_GFX *gfx, ConsoleState curState, Joystick_input Joystick_input)
-{
-  ConsoleState nextState;
-  switch (curState)
-  {
-  case sStartup_Step:
-    // draw Menu
-    break;
+// ConsoleState DodgeUpdateFSM(Arduino_GFX *gfx, ConsoleState curState, Joystick_input Joystick_input)
+// {
+//   ConsoleState nextState;
+//   switch (curState)
+//   {
+//   case sStartup_Step:
+//     // draw Menu
+//     break;
 
-  case sDisplay_Menu:
-    if (Joystick_input.x < -250)
-    {
-      switchToPing();
-    }
-    else if (Joystick_input.x < 250)
-    {
-      switchToDodge();
-    }
-    break;
-  }
-  return nextState;
-}
+//   case sDisplay_Menu:
+//     if (Joystick_input.x < -250)
+//     {
+//       switchToPing();
+//     }
+//     else if (Joystick_input.x < 250)
+//     {
+//       switchToDodge();
+//     }
+//     break;
+//   }
+//   return nextState;
+// }
