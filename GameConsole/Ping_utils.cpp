@@ -47,9 +47,7 @@ void drawPaddle(int y)
 */
 void updatePaddle(Joystick_input Joystick_input)
 {
-  // Erase Old paddle
-  gfx->fillRect(0, Paddle_y_pos, PaddleWidth, PaddleHeight, BLACK);
-  // TODO: remove flickering by only redrawing the parts that need to be redrawn
+  int Old_Paddle_y_pos = Paddle_y_pos;
 
   // update paddle position according to input
   Paddle_y_pos = Paddle_y_pos + (Joystick_input.y / 133);
@@ -60,6 +58,16 @@ void updatePaddle(Joystick_input Joystick_input)
   else if (Paddle_y_pos > (screenHeight - PaddleHeight))
   {
     Paddle_y_pos = screenHeight - PaddleHeight;
+  }
+
+  // Erase only the part of the old paddle that is not overlapped by the new paddle
+  if (Paddle_y_pos > Old_Paddle_y_pos)
+  {
+    gfx->fillRect(0, Old_Paddle_y_pos, PaddleWidth, Paddle_y_pos - Old_Paddle_y_pos, BLACK);
+  }
+  else if (Paddle_y_pos < Old_Paddle_y_pos)
+  {
+    gfx->fillRect(0, Paddle_y_pos + PaddleHeight, PaddleWidth, Old_Paddle_y_pos - Paddle_y_pos, BLACK);
   }
 
   // Draw new paddle
@@ -111,7 +119,6 @@ PingState PingUpdateFSM(PingState curState, Joystick_input Joystick_input)
 
   case sMove_Step:
     updatePaddle(Joystick_input);
-
     updateBall();
     // if (checkCollision())
     // {
