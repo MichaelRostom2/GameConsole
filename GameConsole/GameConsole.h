@@ -1,10 +1,9 @@
 #pragma once
-#include <Arduino_GFX_Library.h>
+
 #include "Arduino.h"
-#include "watchdog.h"
+#include <Arduino_GFX_Library.h>
 #include "Ping_utils.h"
-/* MOSI: 11 */
-/* SCK: 13 */
+#include "watchdog.h"
 
 enum gameMode
 {
@@ -24,13 +23,14 @@ extern const int screenWidth;
 extern const int screenHeight;
 
 /* Home Functions */
-
-/* Dodge Functions */
-void dodge_setup();
-void dodge_loop();
+void updateFSM(Joystick_input joystickInput);
 
 /* Ping Functions */
 void ping_setup();
 void ping_loop();
+
+/* Dodge Functions */
+void dodge_setup();
+void dodge_loop();
 
 /* Watchdog Functions */

@@ -1,11 +1,22 @@
 #include "GameConsole.h"
+
+/* Instantiate screen gfx object*/
+/* MOSI: 11 */
+/* SCK: 13 */
 Arduino_DataBus *bus = new Arduino_HWSPI(8 /* DC */, 10 /* CS */);
 Arduino_GFX *gfx = new Arduino_ILI9341(bus, 9 /* RST */);
+
+/* Screen parameter */
 const int screenWidth = 240;
 const int screenHeight = 320;
 
+/* Start in MENU */
 gameMode currentGame = MENU;
 
+/*!
+  @brief  Updates Game according to FSM states and guards
+  @param  Joystick_input Latest input from Joystick
+*/
 void updateFSM(Joystick_input joystickInput)
 {
     switch (currentGame)
@@ -34,6 +45,9 @@ void updateFSM(Joystick_input joystickInput)
         break;
     }
 }
+/*!
+  @brief  Draws Menu screen
+*/
 void drawMenu()
 {
     gfx->fillScreen(BLACK);
@@ -46,18 +60,21 @@ void drawMenu()
     gfx->println("Dodge");
     gfx->setCursor((screenWidth / 2) + 45, screenHeight / 2);
     gfx->println("Ping");
-    delay(1);
 }
+
 void setup()
 {
-    Serial.begin(9600);
-    currentGame = MENU;
+    // Serial.begin(9600);
+
+    /* Setup Screen */
     gfx->begin();
     gfx->setRotation(0);
-    drawMenu();
 
-    // initialise watchdog
+    // TODO: initialise watchdog
     // watchdogSetup();
+
+    /* Draw Menu on screen */
+    drawMenu();
 }
 void loop()
 {

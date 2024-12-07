@@ -14,11 +14,3 @@ struct Joystick_input
 };
 
 Joystick_input pollInputs();
-
-typedef enum
-{
-    sStartup_Step = 1,
-    sDisplay_Menu = 2,
-} ConsoleState;
-
-ConsoleState ConsoleUpdateFSM();
