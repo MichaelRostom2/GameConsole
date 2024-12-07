@@ -4,6 +4,7 @@
 #include <Arduino_GFX_Library.h>
 #include "Ping_utils.h"
 #include "watchdog.h"
+#include "Dodge_utils.h"
 
 enum gameMode
 {
@@ -23,7 +24,7 @@ extern const int screenWidth;
 extern const int screenHeight;
 
 /* Home Functions */
-void updateFSM(Joystick_input joystickInput);
+void updateFSM(Joystick_input joystickInput, float deltaTime);
 
 /* Ping Functions */
 void ping_setup();

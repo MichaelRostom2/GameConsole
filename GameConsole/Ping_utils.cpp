@@ -4,11 +4,12 @@
 const int BackWallThickness = 8;
 const int PaddleWidth = 8;
 const int PaddleHeight = 64;
-const int BallRadius = 8;
-const int Gravity = 5;
+const int BallSize = 16;
+float Gravity = 40;
+float bounciness = 0.1;
 
 // Ping tracking variables
-Ball ball = Ball{120, 160, 1, 1, 0, false};
+Ball ball = Ball{120, 160, 0, 0, bounciness};
 int Paddle_y_pos = (screenHeight / 2) - (PaddleHeight / 2);
 
 PingState PING_CURRENT_STATE = sStart_Game;
@@ -17,7 +18,7 @@ PingState PING_CURRENT_STATE = sStart_Game;
   @brief  Plays the Ping Game by calling updateFSM of Ping
   @param  joystickInput Latest input from Joystick
 */
-void playPing(Joystick_input joystickInput)
+void playPing(Joystick_input joystickInput, float deltaTime)
 {
   PING_CURRENT_STATE = PingUpdateFSM(PING_CURRENT_STATE, joystickInput);
 }
@@ -28,7 +29,7 @@ void playPing(Joystick_input joystickInput)
 void drawBackWall()
 {
   //  Draw the verticle back wall part
-  gfx->fillRect(screenWidth - BackWallThickness, 0, BackWallThickness, screenHeight, WHITE);
+  gfx->fillRect(screenWidth - BackWallThickness, 0, BackWallThickness, screenHeight, RED);
 }
 
 /*!
@@ -80,7 +81,13 @@ void updatePaddle(Joystick_input Joystick_input)
 */
 void drawBall(int x, int y)
 {
-  gfx->fillCircle(x, y, BallRadius, WHITE);
+  gfx->fillRect(x, y, BallSize, BallSize, GREENYELLOW);
+}
+
+void eraseBall()
+{
+  // Erase Ball
+  gfx->fillRect(ball.x, ball.y, BallSize, BallSize, BLACK);
 }
 
 /*!
@@ -88,12 +95,17 @@ void drawBall(int x, int y)
 */
 void updateBall()
 {
-  // Erase Ball
-  gfx->fillCircle(ball.x, ball.y, BallRadius, BLACK);
 
+  eraseBall();
+  Gravity += 35 * 0.1;
+  // Update the velocity
+  ball.dx += Gravity * 0.01; // FIXME use actual deltaTime
   // Update the position
-  ball.x += ball.dx;
-  ball.y += ball.dy;
+  ball.x += ball.dx * 0.01;
+  ball.y += ball.dy * 0.01;
+
+  // Resolve any collisions
+  CollideBall();
 
   // Draw ball
   drawBall(ball.x, ball.y);
@@ -120,26 +132,76 @@ PingState PingUpdateFSM(PingState curState, Joystick_input Joystick_input)
   case sMove_Step:
     updatePaddle(Joystick_input);
     updateBall();
-    // if (checkCollision())
-    // {
-    //   nextState = sCollision_Step;
-    // }
 
+    if (checkGameOver())
+    {
+      nextState = sGAME_OVER;
+    }
+    else
+    {
+      nextState = sMove_Step;
+    }
     break;
-
-  case sCollision_Step:
-    // if (x < x_paddle)
-    // {
-    //   nextState = sGAME_OVER;
-    // }
-    // else
-    // {
-    //   nextState = sMove_Step;
-    // }
-    // break;
   case sGAME_OVER:
-    // DisplayGameOver
+    displayGameOver();
     break;
   }
   return nextState;
+}
+/*!
+  @brief  Displays Game Over Screen
+*/
+void displayGameOver()
+{
+  // gfx->fillScreen(BLACK);
+  gfx->setTextColor(WHITE);
+  gfx->setTextSize(4);
+  gfx->setCursor(screenWidth / 15, screenHeight / 3);
+  gfx->println("Game Over");
+}
+
+void horizontalBounce()
+{
+  ball.dx *= -ball.bounciness;
+  Gravity *= -1;
+}
+
+void CollideBall()
+{
+  if (ball.x <= PaddleWidth)
+  {
+    if (ball.y >= Paddle_y_pos - BallSize && ball.y <= Paddle_y_pos + PaddleHeight)
+    {
+      horizontalBounce();
+      ball.x = PaddleWidth + 1;
+      // Adjust dy depending on paddle hit location
+      float centerYDiff = (ball.y + BallSize / 2) - (Paddle_y_pos + PaddleHeight / 2);
+      ball.dy += centerYDiff * 2;
+    }
+  }
+  else if (ball.x >= screenWidth - BackWallThickness - BallSize)
+  {
+    horizontalBounce();
+    ball.x = screenWidth - BackWallThickness - BallSize - 1;
+    float rand = (random(0, 1024) * (80 / 1024)) - 40;
+    ball.dy += rand;
+  }
+  else if (ball.y <= 0)
+  {
+    ball.dy = -ball.dy;
+    ball.y = 0;
+  }
+  else if (ball.y >= screenHeight - BallSize)
+  {
+    ball.dy = -ball.dy;
+    ball.y = screenHeight - BallSize;
+  }
+}
+bool checkGameOver()
+{
+  if (ball.x <= 0)
+  {
+    return true;
+  }
+  return false;
 }

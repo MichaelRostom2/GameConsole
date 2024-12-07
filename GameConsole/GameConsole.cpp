@@ -17,7 +17,7 @@ gameMode currentGame = MENU;
   @brief  Updates Game according to FSM states and guards
   @param  Joystick_input Latest input from Joystick
 */
-void updateFSM(Joystick_input joystickInput)
+void updateFSM(Joystick_input joystickInput, float deltaTime)
 {
     switch (currentGame)
     {
@@ -37,11 +37,11 @@ void updateFSM(Joystick_input joystickInput)
         break;
 
     case PING:
-        playPing(joystickInput);
+        playPing(joystickInput, deltaTime);
         break;
 
     case DODGE:
-        // playDodge(joystickInput);
+        playDodge(joystickInput);
         break;
     }
 }
@@ -64,7 +64,7 @@ void drawMenu()
 
 void setup()
 {
-    // Serial.begin(9600);
+    Serial.begin(9600);
 
     /* Setup Screen */
     gfx->begin();
@@ -72,6 +72,8 @@ void setup()
 
     // TODO: initialise watchdog
     // watchdogSetup();
+
+    randomSeed(analogRead(0));
 
     /* Draw Menu on screen */
     drawMenu();
@@ -83,6 +85,7 @@ void loop()
     // Serial.println(joystickInput.x);
     // Serial.println("y = ");
     // Serial.println(joystickInput.y);
-    updateFSM(joystickInput);
+    static float deltaTime = 0.01;
+    updateFSM(joystickInput, deltaTime);
     delay(10);
 }

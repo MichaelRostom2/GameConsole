@@ -1,12 +1,13 @@
+#pragma once
 #include "utils.h"
 
 typedef enum
 {
-    sStart_Game = 1,
-    sMove_Step = 2,
-    sCollision_Step = 3,
-    sGAME_OVER = 4,
+    Dodge_Start_Game = 1,
+    Dodge_Move_Step = 2,
+    Dodge_GAME_OVER = 3,
 } DodgeState;
 
-// DodgeState DodgeUpdateFSM(Arduino_GFX *gfx, DodgeState curState, Joystick_input Joystick_input);
-// void playDodge(Joystick_input Joystick_input);
+DodgeState DodgeUpdateFSM(DodgeState curState, Joystick_input Joystick_input);
+void playDodge(Joystick_input Joystick_input);
+void displayDodgeGameOver();
