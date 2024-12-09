@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../GameConsole.h"
 
 typedef enum
@@ -8,7 +9,6 @@ typedef enum
     Ping_GAME_OVER = 3,
 } PingState;
 
-// Structures
 struct Ball
 {
     float x, y;
@@ -20,4 +20,3 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
 void playPing(struct Joystick_input joystickInput, float deltaTime);
 void displayGameOver();
 void CollideBall();
-bool checkGameOver();

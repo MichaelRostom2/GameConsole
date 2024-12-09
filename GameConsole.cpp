@@ -80,6 +80,47 @@ void drawMenu()
   gfx->setCursor((screenWidth / 2) + 45, screenHeight / 2);
   gfx->println("Ping");
 }
+/*!
+  @brief  Erases the difference between two rectangle.
+  @param  OldX Top left x position of the old rectangle
+  @param  OldY Top left y position of the old rectangle
+  @param  x Top left x position of the new rectangle
+  @param  y Top left y position of the new rectangle
+  @param  size Size of the rectangle
+*/
+void EraseRect(float oldX, float oldY, float x, float y, int size)
+{
+  float xDiff = x - oldX;
+  float yDiff = y - oldY;
+
+  if (x < 0 || y < 0)
+  {
+    // Prevent drawing outside of screen
+    gfx->fillRect(oldX, oldY, size, size, BLACK);
+  }
+  else
+  {
+    // Erase difference on x-axis
+    if (xDiff > 0)
+    {
+      gfx->fillRect(oldX, oldY, xDiff + 1, size, BLACK);
+    }
+    else if (xDiff < 0)
+    {
+      gfx->fillRect(x + size, oldY, -xDiff + 1, size, BLACK);
+    }
+
+    // Erase difference on y-axis
+    if (yDiff > 0)
+    {
+      gfx->fillRect(oldX, oldY, size, yDiff + 1, BLACK);
+    }
+    else if (yDiff < 0)
+    {
+      gfx->fillRect(oldX, y + size, size, -yDiff + 1, BLACK);
+    }
+  }
+}
 
 void setup()
 {
@@ -109,37 +150,4 @@ void loop()
   updateFSM(joystickInput, deltaTime);
   // petWDT();
   delay(10);
-}
-
-void Erase(float oldX, float oldY, float x, float y, int size)
-{
-  float xDiff = x - oldX;
-  float yDiff = y - oldY;
-
-  if (x < 0 || y < 0)
-  {
-    gfx->fillRect(oldX, oldY, size, size, BLACK);
-  }
-  else
-  {
-    // Erase ball
-    // x axis
-    if (xDiff > 0)
-    {
-      gfx->fillRect(oldX, oldY, xDiff + 1, size, BLACK);
-    }
-    else if (xDiff < 0)
-    {
-      gfx->fillRect(x + size, oldY, -xDiff + 1, size, BLACK);
-    }
-    // y axis
-    if (yDiff > 0)
-    {
-      gfx->fillRect(oldX, oldY, size, yDiff + 1, BLACK);
-    }
-    else if (yDiff < 0)
-    {
-      gfx->fillRect(oldX, y + size, size, -yDiff + 1, BLACK);
-    }
-  }
 }

@@ -37,18 +37,7 @@ extern const int screenHeight;
 static int pingHighScore = 0;
 static int dodgeHighScore = 0;
 
-/* Home Functions */
-void updateFSM(Joystick_input joystickInput, float deltaTime);
+/* Functions */
 Joystick_input pollInputs();
-
-/* Ping Functions */
-void ping_setup();
-void ping_loop();
-
-/* Dodge Functions */
-void dodge_setup();
-void dodge_loop();
-
-/* Watchdog Functions */
-
-void Erase(float OldX, float OldY, float x, float y, int size);
+void updateFSM(Joystick_input joystickInput, float deltaTime);
+void EraseRect(float OldX, float OldY, float x, float y, int size);

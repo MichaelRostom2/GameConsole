@@ -80,7 +80,7 @@ void updatePlayer(Joystick_input Joystick_input)
         player.y = screenHeight - playerSize;
     }
 
-    Erase(oldX, oldY, player.x, player.y, playerSize);
+    EraseRect(oldX, oldY, player.x, player.y, playerSize);
 }
 
 ////////////// Bullet functions //////////////
@@ -141,7 +141,7 @@ void updateBullets()
             float oldY = bullets[i].y;
             bullets[i].x += bullets[i].dx * 0.01;
             bullets[i].y += bullets[i].dy * 0.01;
-            Erase(oldX, oldY, bullets[i].x, bullets[i].y, bulletSize);
+            EraseRect(oldX, oldY, bullets[i].x, bullets[i].y, bulletSize);
             drawBullet(bullets[i]);
         }
     }
