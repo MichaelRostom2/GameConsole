@@ -1,5 +1,4 @@
 #pragma once
-#include "../utils.h"
 #include "../GameConsole.h"
 
 typedef enum
@@ -9,7 +8,7 @@ typedef enum
     Dodge_GAME_OVER = 3,
 } DodgeState;
 
-DodgeState DodgeUpdateFSM(DodgeState curState, Joystick_input Joystick_input);
-void playDodge(Joystick_input Joystick_input);
+DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_input);
+void playDodge(struct Joystick_input Joystick_input);
 void displayDodgeGameOver();
 void incrementDodgeScore();

@@ -212,7 +212,7 @@ void drawBullet(Bullet bullet)
   @param  Joystick_input Latest input from Joystick
   @return New dodge State
 */
-DodgeState DodgeUpdateFSM(DodgeState curState, Joystick_input Joystick_input)
+DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_input)
 {
     DodgeState nextState;
     switch (curState)
@@ -285,7 +285,7 @@ DodgeState DODGE_CURRENT_STATE = Dodge_Start_Game;
   @brief  Plays the Dodge Game by calling updateFSM of Dodge
   @param  joystickInput Latest input from Joystick
 */
-void playDodge(Joystick_input joystickInput)
+void playDodge(struct Joystick_input joystickInput)
 {
     DODGE_CURRENT_STATE = DodgeUpdateFSM(DODGE_CURRENT_STATE, joystickInput);
 }

@@ -19,7 +19,7 @@ PingState PING_CURRENT_STATE = Ping_Start_Game;
   @brief  Plays the Ping Game by calling updateFSM of Ping
   @param  joystickInput Latest input from Joystick
 */
-void playPing(Joystick_input joystickInput, float deltaTime)
+void playPing(struct Joystick_input joystickInput, float deltaTime)
 {
   PING_CURRENT_STATE = PingUpdateFSM(PING_CURRENT_STATE, joystickInput);
 }
@@ -117,7 +117,7 @@ void updateBall()
   @param  Joystick_input Latest input from Joystick
   @return New Ping State
 */
-PingState PingUpdateFSM(PingState curState, Joystick_input Joystick_input)
+PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input)
 {
   PingState nextState;
   switch (curState)
@@ -211,7 +211,7 @@ void CollideBall()
       if (pingPlayerScore > pingHighScore)
       {
         pingHighScore = pingPlayerScore;
-            }
+      }
     }
   }
   else if (ball.x >= screenWidth - BackWallThickness - BallSize)

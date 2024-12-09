@@ -1,5 +1,9 @@
 #include "GameConsole.h"
 
+// Joystick offsets so that starting position gives x=0, y=0. (manual adjust accordingly)
+const int JOYSTICK_X_OFFSET = 501;
+const int JOYSTICK_Y_OFFSET = 504;
+
 /* Instantiate screen gfx object*/
 /* MOSI: 11 */
 /* SCK: 13 */
@@ -12,6 +16,21 @@ const int screenHeight = 320;
 
 /* Start in MENU */
 gameMode currentGame = MENU;
+
+/*!
+    @brief  reads the analogue values of x and y from the joystick
+    @return  Joystick_input struct
+*/
+Joystick_input pollInputs()
+{
+  // Create a Joystick_input structure
+  Joystick_input joystickInput;
+
+  // Read raw analog values and adjust by offsets
+  joystickInput.x = analogRead(JOYSTICK_VRX_PIN) - JOYSTICK_X_OFFSET;
+  joystickInput.y = analogRead(JOYSTICK_VRY_PIN) - JOYSTICK_Y_OFFSET;
+  return joystickInput;
+}
 
 /*!
   @brief  Updates Game according to FSM states and guards

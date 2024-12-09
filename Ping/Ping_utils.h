@@ -1,5 +1,4 @@
 #pragma once
-#include "../utils.h"
 #include "../GameConsole.h"
 
 typedef enum
@@ -17,8 +16,8 @@ struct Ball
     float bounciness;
 };
 
-PingState PingUpdateFSM(PingState curState, Joystick_input Joystick_input);
-void playPing(Joystick_input joystickInput, float deltaTime);
+PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input);
+void playPing(struct Joystick_input joystickInput, float deltaTime);
 void displayGameOver();
 void CollideBall();
 bool checkGameOver();
