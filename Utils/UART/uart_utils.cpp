@@ -26,8 +26,6 @@ void sendNewScore(String game, int score)
 // Function to process responses from the computer
 void processResponse(String response, int &scoreToUpdate)
 {
-    Serial.println("reponse is:");
-    Serial.println(response);
     if (response.startsWith("CMD:SCORE"))
     {
         int spaceIndex1 = response.indexOf(" ");

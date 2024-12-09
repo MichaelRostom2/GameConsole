@@ -131,7 +131,7 @@ void setup()
   gfx->setRotation(0);
 
   // TODO: initialise watchdog
-  watchdogSetup();
+  // watchdogSetup();
   // initWDT();
 
   randomSeed(analogRead(0));

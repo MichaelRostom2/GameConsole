@@ -1,31 +1,22 @@
 #include "Dodge_utils.h"
 
+// Bullet Constants
 const int bulletSize = 12;
-const int playerSize = 16;
 float bulletSpeed = 150.0; // px/s
 const float MAX_BULLET_SPEED = 300.0;
-float playerSpeed = 50.0; // px/s
-uint16_t playerColor = 0xFFE0;
 const uint16_t bulletColor = 0x8410;
-const uint16_t bgColor = 0x0000;
 float bulletSpawnRate = 0.25;
 float bulletSpawnTimer = 0.0;
 const float bulletSpawnRamp = -0.00005;
 const float bulletSpeedRamp = 0.02;
 
-// Structures
-struct Bullet
-{
-    float x, y;
-    float dx, dy;
-    bool active;
-};
+// Player Constants
+const int playerSize = 16;
+float playerSpeed = 50.0; // px/s
+uint16_t playerColor = 0xFFE0;
 
-struct Player
-{
-    float x, y;
-    bool alive;
-};
+// Background color
+const uint16_t bgColor = 0x0000;
 
 // Global objects
 Player player = {screenWidth / 2 - playerSize / 2, screenHeight / 2 - playerSize / 2, true};
@@ -33,30 +24,16 @@ const int maxBullets = 30;
 Bullet bullets[maxBullets];
 int dodgePlayerScore = 0;
 
-// Function prototypes
-void updateFSM();
-bool checkCollision(Bullet bullet, Player player);
-void erasePlayer();
-void drawPlayer();
-void updatePlayer(Joystick_input Joystick_input);
-void spawnBullet();
-void updateBullets();
-void eraseBullet(Bullet bullet);
-void drawBullet(Bullet bullet);
-void checkBulletCollisions();
-
 ////////////// Player functions //////////////
-
-void erasePlayer()
-{
-    gfx->fillRect(player.x, player.y, playerSize, playerSize, bgColor);
-}
+/*!
+  @brief  Erases the player from the screen
+*/
 void drawPlayer()
 {
     gfx->fillRect(player.x, player.y, playerSize, playerSize, playerColor);
 }
 
-void updatePlayer(Joystick_input Joystick_input)
+void updatePlayer(struct Joystick_input Joystick_input)
 {
     float oldX = player.x;
     float oldY = player.y;
@@ -215,19 +192,17 @@ void drawBullet(Bullet bullet)
 DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_input)
 {
     DodgeState nextState;
+    String message;
     switch (curState)
     {
     case Dodge_Start_Game:
-        // Display Intro Sequence
         Serial.println("CMD:GET dodge");
-
+        delay(200);
         if (Serial.available() > 0)
         {
-            Serial.println("inside the if stat");
             String message = Serial.readStringUntil('\n');
             Serial.print("Received Message: ");
             Serial.println(message);
-
             processResponse(message, dodgeHighScore);
         }
 
@@ -250,7 +225,7 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
         gfx->println(dodgeHighScore);
         delay(1500);
 
-        // Display Game
+        // Initialize Game
         gfx->fillScreen(BLACK);
         drawPlayer();
         nextState = Dodge_Move_Step;
@@ -307,14 +282,14 @@ void displayDodgeLossCutscene()
     playerColor = 0x5000;
     drawPlayer();
     delay(500);
-    erasePlayer();
+    // Erase the player
+    gfx->fillRect(player.x, player.y, playerSize, playerSize, bgColor);
 }
 /*!
   @brief  Displays Game Over Screen
 */
 void displayDodgeGameOver()
 {
-    // TODO: save scores to computer here
     displayDodgeLossCutscene();
     gfx->setTextColor(ORANGE);
     gfx->setTextSize(4);
