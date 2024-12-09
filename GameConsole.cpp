@@ -131,7 +131,7 @@ void setup()
   gfx->setRotation(0);
 
   // TODO: initialise watchdog
-  // watchdogSetup();
+  // watchdogSetup(); FIXME: this breaks UART high score communication
   // initWDT();
 
   randomSeed(analogRead(0));
@@ -147,7 +147,7 @@ void loop()
   // Serial.println("y = ");
   // Serial.println(joystickInput.y);
   static float deltaTime = 0.01;
-  updateFSM(joystickInput, deltaTime);
   // petWDT();
+  updateFSM(joystickInput, deltaTime);
   delay(10);
 }
