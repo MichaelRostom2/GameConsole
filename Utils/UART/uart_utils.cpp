@@ -1,18 +1,4 @@
 #include "uart_utils.h"
-// // void loop() {
-// //     Serial.println("CMD:GET ping");
-// //     delay(2000);
-// //     Serial.println("CMD:GET dodge");
-// //     delay(2000);
-
-// //     if (Serial.available() > 0) {
-// //         String message = Serial.readStringUntil('\n');
-// //         Serial.print("Received Message: ");
-// //         Serial.println(message);
-
-// //         processResponse(message);
-// //     }
-// // }
 
 // Function to send new scores to computer
 void sendNewScore(String game, int score)

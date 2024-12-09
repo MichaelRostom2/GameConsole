@@ -197,7 +197,7 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
     {
     case Dodge_Start_Game:
         Serial.println("CMD:GET dodge");
-        delay(200);
+        delay(10);
         if (Serial.available() > 0)
         {
             String message = Serial.readStringUntil('\n');

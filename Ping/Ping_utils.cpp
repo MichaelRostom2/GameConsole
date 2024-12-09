@@ -121,9 +121,18 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
   switch (curState)
   {
   case Ping_Start_Game:
-    gfx->fillScreen(BLACK);
+    Serial.println("CMD:GET ping");
+    delay(10);
+    if (Serial.available() > 0)
+    {
+      String message = Serial.readStringUntil('\n');
+      Serial.print("Received Message: ");
+      Serial.println(message);
+      processResponse(message, pingHighScore);
+    }
 
     // Display Intro Sequence
+    gfx->fillScreen(BLACK);
     gfx->setCursor(0, 0);
     gfx->setTextSize(4);
     gfx->setTextColor(WHITE);
@@ -184,6 +193,8 @@ void displayGameOver()
   gfx->setTextSize(3);
   gfx->print("Score: ");
   gfx->println(pingPlayerScore);
+
+  sendNewScore("ping", pingHighScore);
 }
 /*!
   @brief  Adjusts the ball's velocity after a collision with paddle or back wall
