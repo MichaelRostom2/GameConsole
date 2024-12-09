@@ -2,12 +2,11 @@
 #include "utils.h"
 #include "GameConsole.h"
 
-// TODO: convert to PingStartGame
 typedef enum
 {
-    sStart_Game = 1,
-    sMove_Step = 2,
-    sGAME_OVER = 3,
+    Ping_Start_Game = 1,
+    Ping_Move_Step = 2,
+    Ping_GAME_OVER = 3,
 } PingState;
 
 // Structures

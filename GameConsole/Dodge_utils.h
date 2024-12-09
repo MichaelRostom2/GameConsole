@@ -11,3 +11,4 @@ typedef enum
 DodgeState DodgeUpdateFSM(DodgeState curState, Joystick_input Joystick_input);
 void playDodge(Joystick_input Joystick_input);
 void displayDodgeGameOver();
+void incrementDodgeScore();

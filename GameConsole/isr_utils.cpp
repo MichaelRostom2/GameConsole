@@ -1,4 +1,5 @@
 #include "GameConsole.h"
+#include "isr_utils.h"
 
 const unsigned int D2_PORT = 1;
 const unsigned int D2_PIN = 4;
@@ -27,12 +28,12 @@ const unsigned int CPU_INT_2 = getNextCPUINT(CPU_INT_1);
 
 void switchToPing()
 {
-    ping_setup();
+    // ping_setup();
 }
 
 void switchToDodge()
 {
-    dodge_setup();
+    // dodge_setup();
 }
 
 void resetISR()

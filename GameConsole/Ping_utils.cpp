@@ -7,12 +7,13 @@ const int PaddleHeight = 64;
 const int BallSize = 16;
 float Gravity = 40;
 float bounciness = 0.1;
+int pingPlayerScore = 0;
 
 // Ping tracking variables
 Ball ball = Ball{120, 160, 0, 0, bounciness};
 int Paddle_y_pos = (screenHeight / 2) - (PaddleHeight / 2);
 
-PingState PING_CURRENT_STATE = sStart_Game;
+PingState PING_CURRENT_STATE = Ping_Start_Game;
 
 /*!
   @brief  Plays the Ping Game by calling updateFSM of Ping
@@ -84,19 +85,16 @@ void drawBall(int x, int y)
   gfx->fillRect(x, y, BallSize, BallSize, GREENYELLOW);
 }
 
-void eraseBall()
-{
-  // Erase Ball
-  gfx->fillRect(ball.x, ball.y, BallSize, BallSize, BLACK);
-}
-
 /*!
   @brief  Updates the ball according to physics
 */
 void updateBall()
 {
 
-  eraseBall();
+  // Save old values
+  float oldX = ball.x;
+  float oldY = ball.y;
+
   Gravity += 35 * 0.1;
   // Update the velocity
   ball.dx += Gravity * 0.01; // FIXME use actual deltaTime
@@ -106,6 +104,9 @@ void updateBall()
 
   // Resolve any collisions
   CollideBall();
+
+  // Erase ball after moving
+  Erase(oldX, oldY, ball.x, ball.y, BallSize);
 
   // Draw ball
   drawBall(ball.x, ball.y);
@@ -121,28 +122,50 @@ PingState PingUpdateFSM(PingState curState, Joystick_input Joystick_input)
   PingState nextState;
   switch (curState)
   {
-  case sStart_Game:
+  case Ping_Start_Game:
+    gfx->fillScreen(BLACK);
+
+    // Display Intro Sequence
+    gfx->setCursor(0, 0);
+    gfx->setTextSize(4);
+    gfx->setTextColor(WHITE);
+    gfx->print("Welcome to");
+    gfx->setCursor(0, screenHeight / 4 - 25);
+    gfx->setTextColor(ORANGE);
+    gfx->println("   Ping");
+    gfx->setTextSize(3);
+    gfx->setCursor(-3, screenHeight / 2);
+    gfx->setTextColor(WHITE);
+    gfx->println("  High Score");
+    gfx->setCursor(screenWidth / 2 - 22, screenHeight / 2 + 60);
+    gfx->setTextSize(4);
+    gfx->setTextColor(YELLOW);
+    gfx->println(pingHighScore);
+    delay(1500);
+
+    // Display Game
     gfx->fillScreen(BLACK);
     drawBackWall();
     drawPaddle(Paddle_y_pos);
     drawBall(120, 160);
-    nextState = sMove_Step;
+    pingPlayerScore = 0;
+    nextState = Ping_Move_Step;
     break;
 
-  case sMove_Step:
+  case Ping_Move_Step:
     updatePaddle(Joystick_input);
     updateBall();
 
     if (checkGameOver())
     {
-      nextState = sGAME_OVER;
+      nextState = Ping_GAME_OVER;
     }
     else
     {
-      nextState = sMove_Step;
+      nextState = Ping_Move_Step;
     }
     break;
-  case sGAME_OVER:
+  case Ping_GAME_OVER:
     displayGameOver();
     break;
   }
@@ -154,10 +177,16 @@ PingState PingUpdateFSM(PingState curState, Joystick_input Joystick_input)
 void displayGameOver()
 {
   // gfx->fillScreen(BLACK);
-  gfx->setTextColor(WHITE);
+  gfx->setTextColor(ORANGE);
   gfx->setTextSize(4);
+
   gfx->setCursor(screenWidth / 15, screenHeight / 3);
   gfx->println("Game Over");
+  gfx->setCursor(screenWidth / 6, 2 * (screenHeight / 4));
+  gfx->setTextColor(YELLOW);
+  gfx->setTextSize(3);
+  gfx->print("Score: ");
+  gfx->println(pingPlayerScore);
 }
 
 void horizontalBounce()
@@ -172,15 +201,22 @@ void CollideBall()
   {
     if (ball.y >= Paddle_y_pos - BallSize && ball.y <= Paddle_y_pos + PaddleHeight)
     {
+      // Colliding with paddle
       horizontalBounce();
       ball.x = PaddleWidth + 1;
       // Adjust dy depending on paddle hit location
       float centerYDiff = (ball.y + BallSize / 2) - (Paddle_y_pos + PaddleHeight / 2);
       ball.dy += centerYDiff * 2;
+      pingPlayerScore += 1;
+      if (pingPlayerScore > pingHighScore)
+      {
+        pingHighScore = pingPlayerScore;
+            }
     }
   }
   else if (ball.x >= screenWidth - BackWallThickness - BallSize)
   {
+    // Colliding with back wall
     horizontalBounce();
     ball.x = screenWidth - BackWallThickness - BallSize - 1;
     float rand = (random(0, 1024) * (80 / 1024)) - 40;
@@ -188,11 +224,13 @@ void CollideBall()
   }
   else if (ball.y <= 0)
   {
+    // Colliding with top wall
     ball.dy = -ball.dy;
     ball.y = 0;
   }
   else if (ball.y >= screenHeight - BallSize)
   {
+    // Colliding with bottom wall
     ball.dy = -ball.dy;
     ball.y = screenHeight - BallSize;
   }

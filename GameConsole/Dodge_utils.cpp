@@ -5,10 +5,15 @@
 const int bulletSize = 12;
 const int playerSize = 16;
 float bulletSpeed = 150.0; // px/s
-float playerSpeed = 50.0;  // px/s
-const uint16_t playerColor = 0xFFE0;
+const float MAX_BULLET_SPEED = 300.0;
+float playerSpeed = 50.0; // px/s
+uint16_t playerColor = 0xFFE0;
 const uint16_t bulletColor = 0x8410;
 const uint16_t bgColor = 0x0000;
+float bulletSpawnRate = 0.25;
+float bulletSpawnTimer = 0.0;
+const float bulletSpawnRamp = -0.00005;
+const float bulletSpeedRamp = 0.02;
 
 // Structures
 struct Bullet
@@ -26,8 +31,9 @@ struct Player
 
 // Global objects
 Player player = {screenWidth / 2 - playerSize / 2, screenHeight / 2 - playerSize / 2, true};
-const int maxBullets = 5;
+const int maxBullets = 30;
 Bullet bullets[maxBullets];
+int dodgePlayerScore = 0;
 
 // Function prototypes
 void updateFSM();
@@ -47,7 +53,6 @@ void erasePlayer()
 {
     gfx->fillRect(player.x, player.y, playerSize, playerSize, bgColor);
 }
-
 void drawPlayer()
 {
     gfx->fillRect(player.x, player.y, playerSize, playerSize, playerColor);
@@ -55,6 +60,9 @@ void drawPlayer()
 
 void updatePlayer(Joystick_input Joystick_input)
 {
+    float oldX = player.x;
+    float oldY = player.y;
+
     player.x += Joystick_input.x / 133 * playerSpeed * 0.01;
     if (player.x < 0)
     {
@@ -73,12 +81,23 @@ void updatePlayer(Joystick_input Joystick_input)
     {
         player.y = screenHeight - playerSize;
     }
+
+    Erase(oldX, oldY, player.x, player.y, playerSize);
 }
 
 ////////////// Bullet functions //////////////
 
 void spawnBullet()
 {
+    if (bulletSpawnTimer < bulletSpawnRate)
+    {
+        bulletSpawnTimer += 0.01;
+        return;
+    }
+    else
+    {
+        bulletSpawnTimer = 0.0;
+    }
     for (int i = 0; i < maxBullets; i++)
     {
         if (!bullets[i].active)
@@ -107,13 +126,24 @@ void spawnBullet()
 
 void updateBullets()
 {
+    // Ramp speed and spawn rate
+    bulletSpawnRate += bulletSpawnRamp;
+    if (bulletSpawnRate < 0)
+        bulletSpawnRate = 0;
+    bulletSpeed += bulletSpeedRamp;
+    if (bulletSpeed > MAX_BULLET_SPEED)
+    {
+        bulletSpeed = MAX_BULLET_SPEED;
+    }
     for (int i = 0; i < maxBullets; i++)
     {
         if (bullets[i].active)
         {
-            eraseBullet(bullets[i]);
+            float oldX = bullets[i].x;
+            float oldY = bullets[i].y;
             bullets[i].x += bullets[i].dx * 0.01;
             bullets[i].y += bullets[i].dy * 0.01;
+            Erase(oldX, oldY, bullets[i].x, bullets[i].y, bulletSize);
             drawBullet(bullets[i]);
         }
     }
@@ -147,8 +177,18 @@ void checkBulletCollisions()
             if (bullets[i].x < -bulletSize || bullets[i].x > screenWidth || bullets[i].y < -bulletSize || bullets[i].y > screenHeight)
             {
                 bullets[i].active = false;
+                incrementDodgeScore();
             }
         }
+    }
+}
+
+void incrementDodgeScore()
+{
+    dodgePlayerScore += 1;
+    if (dodgePlayerScore > dodgeHighScore)
+    {
+        dodgeHighScore = dodgePlayerScore;
     }
 }
 
@@ -165,9 +205,6 @@ void drawBullet(Bullet bullet)
 {
     if (bullet.active)
     {
-        // Erase the current bullet by drawing over it with a black rectangle
-        gfx->fillRect(bullet.x, bullet.y, bulletSize, bulletSize, bgColor);
-
         gfx->fillRect(bullet.x, bullet.y, bulletSize, bulletSize, bulletColor);
     }
 }
@@ -180,33 +217,68 @@ void drawBullet(Bullet bullet)
 DodgeState DodgeUpdateFSM(DodgeState curState, Joystick_input Joystick_input)
 {
     DodgeState nextState;
-    Serial.println(player.alive);
     switch (curState)
     {
     case Dodge_Start_Game:
+        // Display Intro Sequence
+        Serial.println("CMD:GET dodge");
+        while (Serial.available() == 0)
+        {
+            if (Serial.available() > 0)
+            {
+                Serial.println("inside the if stat");
+                String message = Serial.readStringUntil('\n');
+                Serial.print("Received Message: ");
+                Serial.println(message);
+
+                processResponse(message, dodgeHighScore);
+            }
+        }
+
+        // Intro Sequence
+        gfx->fillScreen(BLACK);
+        gfx->setCursor(0, 0);
+        gfx->setTextSize(4);
+        gfx->setTextColor(WHITE);
+        gfx->print("Welcome to");
+        gfx->setCursor(10, screenHeight / 4 - 25);
+        gfx->setTextColor(CYAN);
+        gfx->println("  Dodge");
+        gfx->setTextSize(3);
+        gfx->setCursor(-3, screenHeight / 2);
+        gfx->setTextColor(WHITE);
+        gfx->println("  High Score");
+        gfx->setCursor(screenWidth / 2 - 22, screenHeight / 2 + 60);
+        gfx->setTextSize(4);
+        gfx->setTextColor(YELLOW);
+        gfx->println(dodgeHighScore);
+        delay(1500);
+
+        // Display Game
         gfx->fillScreen(BLACK);
         drawPlayer();
         nextState = Dodge_Move_Step;
+        dodgePlayerScore = 0;
+        playerColor = 0xFFE0;
         break;
 
     case Dodge_Move_Step:
-        if (random(0, 3) < 1)
-        {
-            spawnBullet();
-        }
-        erasePlayer();
+        spawnBullet();
         updatePlayer(Joystick_input);
         drawPlayer();
         updateBullets();
         checkBulletCollisions();
-        if (player.alive)
+        if (!player.alive)
         {
             nextState = Dodge_GAME_OVER;
         }
+        else
+        {
+            nextState = Dodge_Move_Step;
+        }
         break;
     case Dodge_GAME_OVER:
-        // displayDodgeGameOver();
-
+        displayDodgeGameOver();
         break;
     }
     return nextState;
@@ -221,14 +293,43 @@ void playDodge(Joystick_input joystickInput)
 {
     DODGE_CURRENT_STATE = DodgeUpdateFSM(DODGE_CURRENT_STATE, joystickInput);
 }
+
+void displayDodgeLossCutscene()
+{
+    playerColor = RED;
+    drawPlayer();
+    delay(500);
+    for (int i = 0; i < maxBullets; i++)
+    {
+        if (bullets[i].active)
+        {
+            eraseBullet(bullets[i]);
+            delay(125);
+        }
+    }
+    delay(500);
+    playerColor = 0x5000;
+    drawPlayer();
+    delay(500);
+    erasePlayer();
+}
 /*!
   @brief  Displays Game Over Screen
 */
 void displayDodgeGameOver()
 {
-    // gfx->fillScreen(BLACK);
-    gfx->setTextColor(WHITE);
+    // TODO: save scores to computer here
+    displayDodgeLossCutscene();
+    gfx->setTextColor(ORANGE);
     gfx->setTextSize(4);
+
     gfx->setCursor(screenWidth / 15, screenHeight / 3);
     gfx->println("Game Over");
+    gfx->setCursor(screenWidth / 6, 2 * (screenHeight / 4));
+    gfx->setTextColor(YELLOW);
+    gfx->setTextSize(3);
+    gfx->print("Score: ");
+    gfx->println(dodgePlayerScore);
+
+    sendNewScore("dodge", dodgePlayerScore);
 }

@@ -49,7 +49,7 @@ def process_command(command, scores, ser):
 def main():
     scores = load_scores()
 
-    ser = serial.Serial('COM3', 9600, timeout=1)  # Replace 'COM3' with your port
+    ser = serial.Serial('/dev/tty.usbmodemF412FA9F9FB02', 9600, timeout=1)  # Replace 'COM3' with your port
     time.sleep(2)
 
     print("Listening for Arduino...")
