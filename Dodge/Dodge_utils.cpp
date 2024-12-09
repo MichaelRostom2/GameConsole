@@ -1,5 +1,3 @@
-#include "GameConsole.h"
-#include "utils.h"
 #include "Dodge_utils.h"
 
 const int bulletSize = 12;
@@ -222,17 +220,15 @@ DodgeState DodgeUpdateFSM(DodgeState curState, Joystick_input Joystick_input)
     case Dodge_Start_Game:
         // Display Intro Sequence
         Serial.println("CMD:GET dodge");
-        while (Serial.available() == 0)
-        {
-            if (Serial.available() > 0)
-            {
-                Serial.println("inside the if stat");
-                String message = Serial.readStringUntil('\n');
-                Serial.print("Received Message: ");
-                Serial.println(message);
 
-                processResponse(message, dodgeHighScore);
-            }
+        if (Serial.available() > 0)
+        {
+            Serial.println("inside the if stat");
+            String message = Serial.readStringUntil('\n');
+            Serial.print("Received Message: ");
+            Serial.println(message);
+
+            processResponse(message, dodgeHighScore);
         }
 
         // Intro Sequence

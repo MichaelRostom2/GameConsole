@@ -1,5 +1,5 @@
 #pragma once
-#include "GameConsole.h"
+#include "../../GameConsole.h"
 
 void initWDT();
 

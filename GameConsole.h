@@ -2,11 +2,11 @@
 
 #include "Arduino.h"
 #include <Arduino_GFX_Library.h>
-#include "Ping_utils.h"
-#include "watchdog_utils.h"
-#include "isr_utils.h"
-#include "Dodge_utils.h"
-#include "uart_utils.h"
+#include "Ping/Ping_utils.h"
+#include "Utils/UART/uart_utils.h"
+#include "Utils/Watchdog/watchdog_utils.h"
+#include "Utils/ISR/isr_utils.h"
+#include "Dodge/Dodge_utils.h"
 
 enum gameMode
 {
