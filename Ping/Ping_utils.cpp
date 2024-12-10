@@ -5,14 +5,16 @@ const int BackWallThickness = 8;
 const int PaddleWidth = 8;
 const int PaddleHeight = 64;
 const int BallSize = 16;
-float Gravity = 40;
-float bounciness = 0.1;
-int pingPlayerScore = 0;
+const float bounciness = 0.1;
+float Gravity;
+int pingPlayerScore;
+uint16_t ballColor = GREENYELLOW;
+uint16_t backWallColor = RED;
 
 // Game mechanics variables
 PingState PING_CURRENT_STATE = Ping_Start_Game;
-Ball ball = Ball{120, 160, 0, 0, bounciness};
-int Paddle_y_pos = (screenHeight / 2) - (PaddleHeight / 2);
+Ball ball;
+int Paddle_y_pos;
 
 /*!
   @brief  Plays the Ping Game by calling updateFSM of Ping
@@ -29,7 +31,7 @@ void playPing(struct Joystick_input joystickInput, float deltaTime)
 void drawBackWall()
 {
   //  Draw the verticle back wall part
-  gfx->fillRect(screenWidth - BackWallThickness, 0, BackWallThickness, screenHeight, RED);
+  gfx->fillRect(screenWidth - BackWallThickness, 0, BackWallThickness, screenHeight, backWallColor);
 }
 
 /*!
@@ -81,7 +83,7 @@ void updatePaddle(Joystick_input Joystick_input)
 */
 void drawBall(int x, int y)
 {
-  gfx->fillRect(x, y, BallSize, BallSize, GREENYELLOW);
+  gfx->fillRect(x, y, BallSize, BallSize, ballColor);
 }
 
 /*!
@@ -121,6 +123,15 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
   switch (curState)
   {
   case Ping_Start_Game:
+    // reset/initialize global variables
+    Gravity = 40;
+    pingPlayerScore = 0;
+    ball = Ball{120, 160, 0, 0, bounciness};
+    Paddle_y_pos = (screenHeight / 2) - (PaddleHeight / 2);
+    backWallColor = RED;
+    ballColor = GREENYELLOW;
+
+    sendNewScore("dodge", dodgeHighScore);
     Serial.println("CMD:GET ping");
     delay(10);
     if (Serial.available() > 0)
@@ -178,12 +189,33 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
   }
   return nextState;
 }
+
+void eraseBall()
+{
+  gfx->fillRect(ball.x, ball.y, BallSize, BallSize, ballColor);
+}
+
+void displayPingLossCutscene()
+{
+  ballColor = RED;
+  drawBall(ball.x, ball.y);
+  delay(500);
+  eraseBall();
+  ball.x -= BallSize / 2;
+  ballColor = 0x5000; // dark red
+  backWallColor = 0x5000;
+  // drawBall(ball.x, ball.y);
+  gfx->drawRect(0, ball.y, 2, BallSize, ballColor);
+  drawBackWall();
+  delay(500);
+  gfx->fillScreen(0x0);
+}
 /*!
   @brief  Displays Game Over Screen
 */
 void displayGameOver()
 {
-  // gfx->fillScreen(BLACK);
+  displayPingLossCutscene();
   gfx->setTextColor(ORANGE);
   gfx->setTextSize(4);
   gfx->setCursor(screenWidth / 15, screenHeight / 3);

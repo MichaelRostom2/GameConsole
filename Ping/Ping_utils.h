@@ -15,8 +15,9 @@ struct Ball
     float dx, dy;
     float bounciness;
 };
-
-PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input);
+extern PingState PING_CURRENT_STATE;
+PingState
+PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input);
 void playPing(struct Joystick_input joystickInput, float deltaTime);
 void displayGameOver();
 void CollideBall();

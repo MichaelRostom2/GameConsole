@@ -2,27 +2,27 @@
 
 // Bullet Constants
 const int bulletSize = 12;
-float bulletSpeed = 150.0; // px/s
+float bulletSpeed; // px/s
 const float MAX_BULLET_SPEED = 300.0;
 const uint16_t bulletColor = 0x8410;
-float bulletSpawnRate = 0.25;
-float bulletSpawnTimer = 0.0;
+float bulletSpawnRate;
+float bulletSpawnTimer;
 const float bulletSpawnRamp = -0.00005;
 const float bulletSpeedRamp = 0.02;
 
 // Player Constants
 const int playerSize = 16;
-float playerSpeed = 50.0; // px/s
+const float playerSpeed = 50.0; // px/s
 uint16_t playerColor = 0xFFE0;
 
 // Background color
 const uint16_t bgColor = 0x0000;
 
 // Global objects
-Player player = {screenWidth / 2 - playerSize / 2, screenHeight / 2 - playerSize / 2, true};
+Player player;
 const int maxBullets = 30;
 Bullet bullets[maxBullets];
-int dodgePlayerScore = 0;
+int dodgePlayerScore;
 
 ////////////// Player functions //////////////
 /*!
@@ -196,6 +196,18 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
     switch (curState)
     {
     case Dodge_Start_Game:
+        // reset/initialize global variables
+        bulletSpeed = 150.0;
+        bulletSpawnRate = 0.25;
+        bulletSpawnTimer = 0;
+        player = {(screenWidth * 1.0f) / 2 - playerSize / 2, (screenHeight * 1.0f) / 2 - playerSize / 2, true};
+        dodgePlayerScore = 0;
+        for (int i = 0; i < maxBullets; i++)
+        {
+            bullets[i].active = false;
+        }
+
+        // sendNewScore("dodge", dodgeHighScore);
         Serial.println("CMD:GET dodge");
         delay(10);
         if (Serial.available() > 0)
@@ -290,6 +302,7 @@ void displayDodgeLossCutscene()
 */
 void displayDodgeGameOver()
 {
+    sendNewScore("dodge", dodgePlayerScore);
     displayDodgeLossCutscene();
     gfx->setTextColor(ORANGE);
     gfx->setTextSize(4);
@@ -301,6 +314,4 @@ void displayDodgeGameOver()
     gfx->setTextSize(3);
     gfx->print("Score: ");
     gfx->println(dodgePlayerScore);
-
-    sendNewScore("dodge", dodgePlayerScore);
 }

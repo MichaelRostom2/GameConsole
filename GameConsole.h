@@ -18,6 +18,9 @@ struct Joystick_input
   int y; // Joystick input in y-direction (-504,519). Starting position is 0.
 };
 
+extern const int BUTTON_IGNORE_TIME;
+extern int button_ignore_timer;
+
 enum gameMode
 {
   MENU,
@@ -41,3 +44,4 @@ static int dodgeHighScore = 0;
 Joystick_input pollInputs();
 void updateFSM(Joystick_input joystickInput, float deltaTime);
 void EraseRect(float OldX, float OldY, float x, float y, int size);
+void drawMenu();

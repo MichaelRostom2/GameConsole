@@ -1,8 +1,8 @@
 #include "GameConsole.h"
 
 // Joystick offsets so that starting position gives x=0, y=0. (manual adjust accordingly)
-const int JOYSTICK_X_OFFSET = 501;
-const int JOYSTICK_Y_OFFSET = 504;
+const int JOYSTICK_X_OFFSET = 504;
+const int JOYSTICK_Y_OFFSET = 509;
 
 /* Instantiate screen gfx object*/
 /* MOSI: 11 */
@@ -13,6 +13,8 @@ Arduino_GFX *gfx = new Arduino_ILI9341(bus, 9 /* RST */);
 /* Screen parameter */
 const int screenWidth = 240;
 const int screenHeight = 320;
+int button_ignore_timer = 0;
+const int BUTTON_IGNORE_TIME = 3;
 
 /* Start in MENU */
 gameMode currentGame = MENU;
@@ -46,11 +48,13 @@ void updateFSM(Joystick_input joystickInput, float deltaTime)
     {
 
       currentGame = PING;
+      PING_CURRENT_STATE = Ping_Start_Game;
     }
     else if (joystickInput.x < -250)
     {
 
       currentGame = DODGE;
+      DODGE_CURRENT_STATE = Dodge_Start_Game;
     }
 
     break;
@@ -130,9 +134,9 @@ void setup()
   gfx->begin();
   gfx->setRotation(0);
 
-  // TODO: initialise watchdog
-  // watchdogSetup(); FIXME: this breaks UART high score communication
-  // initWDT();
+  buttonsISRSetup();
+  // FIXME: this breaks UART high score communication
+  //  initWDT();
 
   randomSeed(analogRead(0));
 
@@ -147,6 +151,10 @@ void loop()
   // Serial.println("y = ");
   // Serial.println(joystickInput.y);
   static float deltaTime = 0.01;
+  if (button_ignore_timer > 0)
+  {
+    button_ignore_timer -= 1;
+  }
   // petWDT();
   updateFSM(joystickInput, deltaTime);
   delay(10);

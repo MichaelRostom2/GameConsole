@@ -22,6 +22,9 @@ struct Player
     float x, y;
     bool alive;
 };
+
+extern DodgeState DODGE_CURRENT_STATE;
+
 bool checkCollision(Bullet bullet, Player player);
 void drawPlayer();
 void updatePlayer(struct Joystick_input Joystick_input);
