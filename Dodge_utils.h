@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../GameConsole.h"
+#include "GameConsole.h"
 
 typedef enum
 {
-    Dodge_Start_Game = 1,
-    Dodge_Move_Step = 2,
-    Dodge_GAME_OVER = 3,
+    DODGE_START = 1,
+    DODGE_MOVE = 2,
+    DODGE_GAME_OVER = 3,
 } DodgeState;
 
 // Structures
@@ -37,3 +37,4 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
 void playDodge(struct Joystick_input Joystick_input);
 void displayDodgeGameOver();
 void incrementDodgeScore();
+void DrawDodgeIntro();

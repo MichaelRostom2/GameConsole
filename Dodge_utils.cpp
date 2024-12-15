@@ -26,13 +26,17 @@ int dodgePlayerScore;
 
 ////////////// Player functions //////////////
 /*!
-  @brief  Erases the player from the screen
+  @brief  Draws player on the screen using the global player object
 */
 void drawPlayer()
 {
     gfx->fillRect(player.x, player.y, playerSize, playerSize, playerColor);
 }
 
+/*!
+  @brief  Updates and draws player position based on Joystick input. And erases the old player position.
+  @param  Joystick_input Latest input from Joystick
+*/
 void updatePlayer(struct Joystick_input Joystick_input)
 {
     float oldX = player.x;
@@ -56,12 +60,18 @@ void updatePlayer(struct Joystick_input Joystick_input)
     {
         player.y = screenHeight - playerSize;
     }
-
+    // Erase the old player
     EraseRect(oldX, oldY, player.x, player.y, playerSize);
+
+    // Draw the new player
+    drawPlayer();
 }
 
 ////////////// Bullet functions //////////////
 
+/*!
+  @brief Spawns a bullet at a random edge of the screen
+*/
 void spawnBullet()
 {
     if (bulletSpawnTimer < bulletSpawnRate)
@@ -99,6 +109,9 @@ void spawnBullet()
     }
 }
 
+/*!
+  @brief Updates bullet positions and draws them on the screen
+*/
 void updateBullets()
 {
     // Ramp speed and spawn rate
@@ -119,11 +132,18 @@ void updateBullets()
             bullets[i].x += bullets[i].dx * 0.01;
             bullets[i].y += bullets[i].dy * 0.01;
             EraseRect(oldX, oldY, bullets[i].x, bullets[i].y, bulletSize);
-            drawBullet(bullets[i]);
+
+            // Draw the new bullet
+            gfx->fillRect(bullets[i].x, bullets[i].y, bulletSize, bulletSize, bulletColor);
         }
     }
 }
-
+/*!
+    @brief  Checks if a bullet has collided with the player
+    @param  bullet Bullet object to check
+    @param  player Player object to check
+    @return True if collision has occurred, False otherwise
+*/
 bool checkCollision(Bullet bullet, Player player)
 {
     if (!bullet.active)
@@ -138,6 +158,9 @@ bool checkCollision(Bullet bullet, Player player)
     return !(bulletRight <= player.x || bullet.x >= playerRight || bulletBottom <= player.y || bullet.y >= playerBottom);
 }
 
+/*!
+  @brief  Checks if any bullet has collided with the player or has gone out of bounds
+*/
 void checkBulletCollisions()
 {
     for (int i = 0; i < maxBullets; i++)
@@ -152,35 +175,13 @@ void checkBulletCollisions()
             if (bullets[i].x < -bulletSize || bullets[i].x > screenWidth || bullets[i].y < -bulletSize || bullets[i].y > screenHeight)
             {
                 bullets[i].active = false;
-                incrementDodgeScore();
+                dodgePlayerScore += 1;
+                if (dodgePlayerScore > dodgeHighScore)
+                {
+                    dodgeHighScore = dodgePlayerScore;
+                }
             }
         }
-    }
-}
-
-void incrementDodgeScore()
-{
-    dodgePlayerScore += 1;
-    if (dodgePlayerScore > dodgeHighScore)
-    {
-        dodgeHighScore = dodgePlayerScore;
-    }
-}
-
-void eraseBullet(Bullet bullet)
-{
-    if (bullet.active)
-    {
-        // Erase the current bullet by drawing over it with a black rectangle
-        gfx->fillRect(bullet.x, bullet.y, bulletSize, bulletSize, bgColor);
-    }
-}
-
-void drawBullet(Bullet bullet)
-{
-    if (bullet.active)
-    {
-        gfx->fillRect(bullet.x, bullet.y, bulletSize, bulletSize, bulletColor);
     }
 }
 /*!
@@ -195,7 +196,7 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
     String message;
     switch (curState)
     {
-    case Dodge_Start_Game:
+    case DODGE_START:
         // reset/initialize global variables
         bulletSpeed = 150.0;
         bulletSpawnRate = 0.25;
@@ -218,55 +219,37 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
             processResponse(message, dodgeHighScore);
         }
 
-        // Intro Sequence
-        gfx->fillScreen(BLACK);
-        gfx->setCursor(0, 0);
-        gfx->setTextSize(4);
-        gfx->setTextColor(WHITE);
-        gfx->print("Welcome to");
-        gfx->setCursor(10, screenHeight / 4 - 25);
-        gfx->setTextColor(CYAN);
-        gfx->println("  Dodge");
-        gfx->setTextSize(3);
-        gfx->setCursor(-3, screenHeight / 2);
-        gfx->setTextColor(WHITE);
-        gfx->println("  High Score");
-        gfx->setCursor(screenWidth / 2 - 22, screenHeight / 2 + 60);
-        gfx->setTextSize(4);
-        gfx->setTextColor(YELLOW);
-        gfx->println(dodgeHighScore);
-        delay(1500);
+        DrawDodgeIntro();
 
         // Initialize Game
         gfx->fillScreen(BLACK);
         drawPlayer();
-        nextState = Dodge_Move_Step;
+        nextState = DODGE_MOVE;
         dodgePlayerScore = 0;
         playerColor = 0xFFE0;
         break;
 
-    case Dodge_Move_Step:
+    case DODGE_MOVE:
         spawnBullet();
         updatePlayer(Joystick_input);
-        drawPlayer();
         updateBullets();
         checkBulletCollisions();
         if (!player.alive)
         {
-            nextState = Dodge_GAME_OVER;
+            nextState = DODGE_GAME_OVER;
         }
         else
         {
-            nextState = Dodge_Move_Step;
+            nextState = DODGE_MOVE;
         }
         break;
-    case Dodge_GAME_OVER:
+    case DODGE_GAME_OVER:
         displayDodgeGameOver();
         break;
     }
     return nextState;
 }
-DodgeState DODGE_CURRENT_STATE = Dodge_Start_Game;
+DodgeState DODGE_CURRENT_STATE = DODGE_START;
 
 /*!
   @brief  Plays the Dodge Game by calling updateFSM of Dodge
@@ -276,7 +259,32 @@ void playDodge(struct Joystick_input joystickInput)
 {
     DODGE_CURRENT_STATE = DodgeUpdateFSM(DODGE_CURRENT_STATE, joystickInput);
 }
-
+/*!
+  @brief Draws Dodge Intro welcome screen
+*/
+void DrawDodgeIntro()
+{
+    gfx->fillScreen(BLACK);
+    gfx->setCursor(0, 0);
+    gfx->setTextSize(4);
+    gfx->setTextColor(WHITE);
+    gfx->print("Welcome to");
+    gfx->setCursor(10, screenHeight / 4 - 25);
+    gfx->setTextColor(CYAN);
+    gfx->println("  Dodge");
+    gfx->setTextSize(3);
+    gfx->setCursor(-3, screenHeight / 2);
+    gfx->setTextColor(WHITE);
+    gfx->println("  High Score");
+    gfx->setCursor(screenWidth / 2 - 22, screenHeight / 2 + 60);
+    gfx->setTextSize(4);
+    gfx->setTextColor(YELLOW);
+    gfx->println(dodgeHighScore);
+    delay(1500);
+}
+/*!
+  @brief  Displays Dodge Loss Cutscene.
+*/
 void displayDodgeLossCutscene()
 {
     playerColor = RED;
@@ -286,8 +294,9 @@ void displayDodgeLossCutscene()
     {
         if (bullets[i].active)
         {
-            eraseBullet(bullets[i]);
-            delay(125);
+            // Erase the bullet
+            gfx->fillRect(bullets[i].x, bullets[i].y, bulletSize, bulletSize, bgColor);
+            delay(100);
         }
     }
     delay(500);

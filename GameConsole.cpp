@@ -48,13 +48,13 @@ void updateFSM(Joystick_input joystickInput, float deltaTime)
     {
 
       currentGame = PING;
-      PING_CURRENT_STATE = Ping_Start_Game;
+      PING_CURRENT_STATE = PING_START;
     }
     else if (joystickInput.x < -250)
     {
 
       currentGame = DODGE;
-      DODGE_CURRENT_STATE = Dodge_Start_Game;
+      DODGE_CURRENT_STATE = DODGE_START;
     }
 
     break;
@@ -135,7 +135,6 @@ void setup()
   gfx->setRotation(0);
 
   buttonsISRSetup();
-  // FIXME: this breaks UART high score communication
   //  initWDT();
 
   randomSeed(analogRead(0));
@@ -145,6 +144,7 @@ void setup()
 }
 void loop()
 {
+  // int enterLoopTime = millis();
   Joystick_input joystickInput = pollInputs();
   // Serial.println("x = ");
   // Serial.println(joystickInput.x);
@@ -158,4 +158,7 @@ void loop()
   // petWDT();
   updateFSM(joystickInput, deltaTime);
   delay(10);
+  // int exitLoopTime = millis();
+  // deltaTime = exitLoopTime - enterLoopTime;
+  // Serial.println(deltaTime);
 }

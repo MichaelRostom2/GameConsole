@@ -28,13 +28,13 @@ unsigned int getNextCPUINT(unsigned int start)
 void switchToPing()
 {
     currentGame = PING;
-    PING_CURRENT_STATE = Ping_Start_Game;
+    PING_CURRENT_STATE = PING_START;
 }
 
 void switchToDodge()
 {
     currentGame = DODGE;
-    DODGE_CURRENT_STATE = Dodge_Start_Game;
+    DODGE_CURRENT_STATE = DODGE_START;
 }
 
 void resetISR()

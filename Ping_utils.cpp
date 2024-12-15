@@ -12,7 +12,7 @@ uint16_t ballColor = GREENYELLOW;
 uint16_t backWallColor = RED;
 
 // Game mechanics variables
-PingState PING_CURRENT_STATE = Ping_Start_Game;
+PingState PING_CURRENT_STATE = PING_START;
 Ball ball;
 int Paddle_y_pos;
 
@@ -122,7 +122,7 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
   PingState nextState;
   switch (curState)
   {
-  case Ping_Start_Game:
+  case PING_START:
     // reset/initialize global variables
     Gravity = 40;
     pingPlayerScore = 0;
@@ -142,24 +142,7 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
       processResponse(message, pingHighScore);
     }
 
-    // Display Intro Sequence
-    gfx->fillScreen(BLACK);
-    gfx->setCursor(0, 0);
-    gfx->setTextSize(4);
-    gfx->setTextColor(WHITE);
-    gfx->print("Welcome to");
-    gfx->setCursor(0, screenHeight / 4 - 25);
-    gfx->setTextColor(ORANGE);
-    gfx->println("   Ping");
-    gfx->setTextSize(3);
-    gfx->setCursor(-3, screenHeight / 2);
-    gfx->setTextColor(WHITE);
-    gfx->println("  High Score");
-    gfx->setCursor(screenWidth / 2 - 22, screenHeight / 2 + 60);
-    gfx->setTextSize(4);
-    gfx->setTextColor(YELLOW);
-    gfx->println(pingHighScore);
-    delay(1500);
+    DrawPingIntro();
 
     // Initialize Game
     gfx->fillScreen(BLACK);
@@ -167,40 +150,62 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
     drawPaddle(Paddle_y_pos);
     drawBall(120, 160);
     pingPlayerScore = 0;
-    nextState = Ping_Move_Step;
+    nextState = PING_MOVE;
     break;
 
-  case Ping_Move_Step:
+  case PING_MOVE:
     updatePaddle(Joystick_input);
     updateBall();
 
     if (ball.x <= 0)
     {
-      nextState = Ping_GAME_OVER;
+      nextState = PING_GAME_OVER;
     }
     else
     {
-      nextState = Ping_Move_Step;
+      nextState = PING_MOVE;
     }
     break;
-  case Ping_GAME_OVER:
+  case PING_GAME_OVER:
     displayGameOver();
     break;
   }
   return nextState;
 }
-
-void eraseBall()
+/*!
+  @brief Draws Ping Intro welcome screen
+*/
+void DrawPingIntro()
 {
-  gfx->fillRect(ball.x, ball.y, BallSize, BallSize, ballColor);
+  gfx->fillScreen(BLACK);
+  gfx->setCursor(0, 0);
+  gfx->setTextSize(4);
+  gfx->setTextColor(WHITE);
+  gfx->print("Welcome to");
+  gfx->setCursor(0, screenHeight / 4 - 25);
+  gfx->setTextColor(ORANGE);
+  gfx->println("   Ping");
+  gfx->setTextSize(3);
+  gfx->setCursor(-3, screenHeight / 2);
+  gfx->setTextColor(WHITE);
+  gfx->println("  High Score");
+  gfx->setCursor(screenWidth / 2 - 22, screenHeight / 2 + 60);
+  gfx->setTextSize(4);
+  gfx->setTextColor(YELLOW);
+  gfx->println(pingHighScore);
+  delay(1500);
 }
-
+/*!
+  @brief  Displays Ping Loss Cutscene.
+*/
 void displayPingLossCutscene()
 {
   ballColor = RED;
   drawBall(ball.x, ball.y);
   delay(500);
-  eraseBall();
+  // erase ball
+  gfx->fillRect(ball.x, ball.y, BallSize, BallSize, ballColor);
+
   ball.x -= BallSize / 2;
   ballColor = 0x5000; // dark red
   backWallColor = 0x5000;

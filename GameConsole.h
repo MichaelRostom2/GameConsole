@@ -2,11 +2,12 @@
 
 #include <Arduino.h>
 #include <Arduino_GFX_Library.h>
-#include "Ping/Ping_utils.h"
-#include "Utils/UART/uart_utils.h"
-#include "Utils/Watchdog/watchdog_utils.h"
-#include "Utils/ISR/isr_utils.h"
-#include "Dodge/Dodge_utils.h"
+
+#include "uart_utils.h"
+#include "watchdog_utils.h"
+#include "isr_utils.h"
+#include "Ping_utils.h"
+#include "Dodge_utils.h"
 
 #define JOYSTICK_VRX_PIN A0 // Arduino pin connected to Joystick VRX pin
 #define JOYSTICK_VRY_PIN A1 // Arduino pin connected to Joystick VRY pin
