@@ -287,6 +287,7 @@ void DrawDodgeIntro()
 */
 void displayDodgeLossCutscene()
 {
+
     playerColor = RED;
     drawPlayer();
     delay(500);
@@ -299,9 +300,11 @@ void displayDodgeLossCutscene()
             delay(100);
         }
     }
+    petWDT();
     delay(500);
     playerColor = 0x5000;
     drawPlayer();
+    petWDT();
     delay(500);
     // Erase the player
     gfx->fillRect(player.x, player.y, playerSize, playerSize, bgColor);

@@ -135,15 +135,18 @@ void setup()
   gfx->setRotation(0);
 
   buttonsISRSetup();
-  //  initWDT();
 
   randomSeed(analogRead(0));
 
   /* Draw Menu on screen */
   drawMenu();
+
+  initWDT();
 }
 void loop()
 {
+  petWDT();
+
   // int enterLoopTime = millis();
   Joystick_input joystickInput = pollInputs();
   // Serial.println("x = ");
@@ -155,7 +158,7 @@ void loop()
   {
     button_ignore_timer -= 1;
   }
-  // petWDT();
+
   updateFSM(joystickInput, deltaTime);
   delay(10);
   // int exitLoopTime = millis();

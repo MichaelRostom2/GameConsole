@@ -203,6 +203,7 @@ void displayPingLossCutscene()
   ballColor = RED;
   drawBall(ball.x, ball.y);
   delay(500);
+  petWDT();
   // erase ball
   gfx->fillRect(ball.x, ball.y, BallSize, BallSize, ballColor);
 

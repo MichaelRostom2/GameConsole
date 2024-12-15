@@ -11,7 +11,7 @@ void wdtISR()
 }
 void initWDT()
 {
-    R_WDT->WDTCR = ((0b11 << R_WDT_WDTCR_RPSS_Pos) | (0b11 << R_WDT_WDTCR_RPES_Pos) | (0b1000 << R_WDT_WDTCR_CKS_Pos) | (0b10 << R_WDT_WDTCR_TOPS_Pos));
+    R_WDT->WDTCR = ((0b11 << R_WDT_WDTCR_RPSS_Pos) | (0b11 << R_WDT_WDTCR_RPES_Pos) | (0b1000 << R_WDT_WDTCR_CKS_Pos) | (0b11 << R_WDT_WDTCR_TOPS_Pos));
 
     R_DEBUG->DBGSTOPCR_b.DBGSTOP_WDT = 0;
     R_WDT->WDTSR = 0;
