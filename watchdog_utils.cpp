@@ -1,5 +1,6 @@
 #include "watchdog_utils.h"
 
+/* FIXME: Michael: I extended the watchdog to 2.3 seconds. Check if it still triggering */
 const unsigned int WDT_INT = getNextCPUINT(15);
 
 /* ISR when WDT triggers */
