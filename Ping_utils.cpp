@@ -16,6 +16,9 @@ PingState PING_CURRENT_STATE = PING_START;
 Ball ball;
 int Paddle_y_pos;
 
+// Game Variables
+bool pingGameOver = false;
+
 /*!
   @brief  Plays the Ping Game by calling updateFSM of Ping
   @param  joystickInput Latest input from Joystick
@@ -125,6 +128,7 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
   {
   case PING_START:
     // reset/initialize global variables
+    pingGameOver = false;
     Gravity = 40;
     pingPlayerScore = 0;
     ball = Ball{120, 160, 0, 0, bounciness};
@@ -168,7 +172,11 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
     }
     break;
   case PING_GAME_OVER:
-    displayGameOver();
+    if (!pingGameOver)
+    {
+      displayGameOver();
+    }
+    pingGameOver = true;
     nextState = PING_GAME_OVER;
     break;
   }

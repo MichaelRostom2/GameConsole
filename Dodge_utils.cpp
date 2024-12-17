@@ -24,6 +24,9 @@ const uint16_t bgColor = 0x0000;
 Player player;
 int dodgePlayerScore;
 
+// Game Variables
+bool DodgeGameOver = false;
+
 ////////////// Player functions //////////////
 /*!
   @brief  Draws player on the screen using the global player object
@@ -244,7 +247,11 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
         }
         break;
     case DODGE_GAME_OVER:
-        displayDodgeGameOver();
+        if (!DodgeGameOver)
+        {
+            displayDodgeGameOver();
+            DodgeGameOver = true;
+        }
         nextState = DODGE_GAME_OVER;
         break;
     }

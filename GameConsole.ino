@@ -152,22 +152,13 @@ void loop()
 {
 #ifndef UNIT_TEST
   petWDT();
-  // int enterLoopTime = millis();
   Joystick_input joystickInput = pollInputs();
-  // Serial.println("x = ");
-  // Serial.println(joystickInput.x);
-  // Serial.println("y = ");
-  // Serial.println(joystickInput.y);
   static float deltaTime = 0.01;
   if (button_ignore_timer > 0)
   {
     button_ignore_timer -= 1;
   }
-
   updateFSM(joystickInput, deltaTime);
   delay(10);
-// int exitLoopTime = millis();
-// deltaTime = exitLoopTime - enterLoopTime;
-// Serial.println(deltaTime);
 #endif
 }
