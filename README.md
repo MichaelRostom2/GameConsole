@@ -36,10 +36,12 @@ A CS1600 Project for Fall 2024. By Henry Earnest, Michael Rostom, and Nathan Kim
 - pySerial. (tested with version 3.4)
 
 ## How to run
-Open Arduino IDE and get the port at which Arduino is connected at. 
+Open Arduino IDE and get the port at which Arduino is connected at(bottom right).
+For mac it looks something like: "dev/tty.usbmodemF412FA9F9FB02"
+For windows it looks something like: "COM6"
+replace python file 52 with your port.
 
-
-Compile and upload code using Arduino IDE(or other method of uploading code). Then run '''python UART-Laptop''' in terminal and wait for it to say "Listening for Arduino...".
+Compile and upload code using Arduino IDE(or other method of uploading code). Make sure Serial monitor is not opened on the Arduino IDE and run UART-Laptop.py in terminal and wait for it to say "Listening for Arduino...".
 Then you can interact with console. Enjoy Ping and Dodge!
 
 
