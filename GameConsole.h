@@ -1,6 +1,6 @@
 #pragma once
 
-#define UNIT_TEST
+// #define UNIT_TEST
 
 #include <Arduino.h>
 #include <Arduino_GFX_Library.h>
