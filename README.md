@@ -1,5 +1,7 @@
 # GameConsole
-A CS1600 Project for Fall 2024. By Henry Earnest, Michael Rostom, and Nathan Kim
+A CS1600 Project for Fall 2024. By Henry Earnest, Michael Rostom, and Nathan Kim.
+
+Read "Project Report.pdf" for detailed information on the project!
 
 ## Materials needed
 - 1 Arduino Uno R4 Wifi
