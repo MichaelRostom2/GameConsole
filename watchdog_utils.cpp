@@ -1,7 +1,13 @@
 #include "watchdog_utils.h"
 
 const unsigned int WDT_INT = getNextCPUINT(15);
-
+/* [NOT USED] ISR when WDT triggers*/
+void wdtISR()
+{
+    Serial.println("WOOF!!!");
+    while (true)
+        ;
+}
 /*!
     @brief  Initializes the watchdog timer
 */
