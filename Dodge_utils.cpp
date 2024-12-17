@@ -206,6 +206,7 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
         bulletSpawnTimer = 0;
         player = {(screenWidth * 1.0f) / 2 - playerSize / 2, (screenHeight * 1.0f) / 2 - playerSize / 2, true};
         dodgePlayerScore = 0;
+        DodgeGameOver = false;
         for (int i = 0; i < maxBullets; i++)
         {
             bullets[i].active = false;
