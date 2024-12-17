@@ -9,30 +9,30 @@ A CS1600 Project for Fall 2024. By Henry Earnest, Michael Rostom, and Nathan Kim
 
 
 ## Wiring
-Screen: 
+#### Screen: 
 - Wire up DC into Arduino's pin 8.
 - Wire up RST into Arduino's pin 9.
 - Wire up CS into Arduino's pin 10.
 - Wire up MOSI into Arduino's pin 11.
 - Wire up SCK into Arduino's pin 13
 
-Home Button:
+#### Home Button:
 - Wire up into Arduino's pin 3.
 
-Reset Button:
+#### Reset Button:
 - Wire up into Arduino's pin 2.
 
 
-Joystick: 
+#### Joystick: 
 - Wire up VRX into Arduino's A0.
 - Wire up VRY into Arduino's A1.
 
 
 ## Dependencies
-Arduino Dependencies: 
+#### Arduino Dependencies: 
 - Arduino_GFX Library by moononournation. (tested with version 1.5.0)
 
-Python Dependencies: 
+#### Python Dependencies: 
 - pySerial. (tested with version 3.4)
 
 ## How to run
@@ -41,7 +41,7 @@ Then you can interact with console. Enjoy Ping and Dodge!
 
 
 ## FAQ
-What do I do if I have Joystick Drift? 
+#### What do I do if I have Joystick Drift? 
 You can calibrate the joystick by making sure offset values in GameConsole.ino are accurate so that pollInputs returns 0 for x and y when joystick is in the middle.
 
 

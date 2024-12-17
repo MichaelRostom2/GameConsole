@@ -1,4 +1,4 @@
-#include "test.h"
+#include "TestCases.h"
 
 Ball testingBall = {0, 0, 0, 0, 0};
 int testingPaddle_y_pos = 0;
