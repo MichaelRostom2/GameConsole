@@ -8,6 +8,8 @@
 #include "isr_utils.h"
 #include "Ping_utils.h"
 #include "Dodge_utils.h"
+#include "test.h"
+#define UNIT_TEST
 
 #define JOYSTICK_VRX_PIN A0 // Arduino pin connected to Joystick VRX pin
 #define JOYSTICK_VRY_PIN A1 // Arduino pin connected to Joystick VRY pin

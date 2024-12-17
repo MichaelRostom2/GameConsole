@@ -129,6 +129,7 @@ void EraseRect(float oldX, float oldY, float x, float y, int size)
 void setup()
 {
   Serial.begin(9600);
+#ifndef UNIT_TEST
 
   /* Setup Screen */
   gfx->begin();
@@ -142,11 +143,15 @@ void setup()
   drawMenu();
 
   initWDT();
+  petWDT();
+#else
+  testAllTests();
+#endif
 }
 void loop()
 {
+#ifndef UNIT_TEST
   petWDT();
-
   // int enterLoopTime = millis();
   Joystick_input joystickInput = pollInputs();
   // Serial.println("x = ");
@@ -161,7 +166,8 @@ void loop()
 
   updateFSM(joystickInput, deltaTime);
   delay(10);
-  // int exitLoopTime = millis();
-  // deltaTime = exitLoopTime - enterLoopTime;
-  // Serial.println(deltaTime);
+// int exitLoopTime = millis();
+// deltaTime = exitLoopTime - enterLoopTime;
+// Serial.println(deltaTime);
+#endif
 }

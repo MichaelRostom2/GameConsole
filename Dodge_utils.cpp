@@ -9,6 +9,8 @@ float bulletSpawnRate;
 float bulletSpawnTimer;
 const float bulletSpawnRamp = -0.00005;
 const float bulletSpeedRamp = 0.02;
+const int maxBullets = 30;
+Bullet bullets[30];
 
 // Player Constants
 const int playerSize = 16;
@@ -20,8 +22,6 @@ const uint16_t bgColor = 0x0000;
 
 // Global objects
 Player player;
-const int maxBullets = 30;
-Bullet bullets[maxBullets];
 int dodgePlayerScore;
 
 ////////////// Player functions //////////////
@@ -37,7 +37,7 @@ void drawPlayer()
   @brief  Updates and draws player position based on Joystick input. And erases the old player position.
   @param  Joystick_input Latest input from Joystick
 */
-void updatePlayer(struct Joystick_input Joystick_input)
+void updatePlayer(struct Joystick_input Joystick_input, Player &player)
 {
     float oldX = player.x;
     float oldY = player.y;
@@ -231,7 +231,7 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
 
     case DODGE_MOVE:
         spawnBullet();
-        updatePlayer(Joystick_input);
+        updatePlayer(Joystick_input, player);
         updateBullets();
         checkBulletCollisions();
         if (!player.alive)
@@ -245,6 +245,7 @@ DodgeState DodgeUpdateFSM(DodgeState curState, struct Joystick_input Joystick_in
         break;
     case DODGE_GAME_OVER:
         displayDodgeGameOver();
+        nextState = DODGE_GAME_OVER;
         break;
     }
     return nextState;
@@ -300,11 +301,9 @@ void displayDodgeLossCutscene()
             delay(100);
         }
     }
-    petWDT();
     delay(500);
     playerColor = 0x5000;
     drawPlayer();
-    petWDT();
     delay(500);
     // Erase the player
     gfx->fillRect(player.x, player.y, playerSize, playerSize, bgColor);

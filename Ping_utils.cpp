@@ -48,7 +48,7 @@ void drawPaddle(int y)
   @brief  Updates and draws the paddle according to input from Joystick
   @param  Joystick_input      Latest Input from Joystick
 */
-void updatePaddle(Joystick_input Joystick_input)
+int updatePaddle(Joystick_input Joystick_input, int Paddle_y_pos)
 {
   int Old_Paddle_y_pos = Paddle_y_pos;
 
@@ -75,6 +75,7 @@ void updatePaddle(Joystick_input Joystick_input)
 
   // Draw new paddle
   drawPaddle(Paddle_y_pos);
+  return Paddle_y_pos;
 }
 /*!
   @brief  Draws the ball of Ping Game.
@@ -89,7 +90,7 @@ void drawBall(int x, int y)
 /*!
   @brief  Updates the ball according to physics
 */
-void updateBall()
+void updateBall(Ball &ball, float &Gravity)
 {
   // Save old values
   float oldX = ball.x;
@@ -97,13 +98,13 @@ void updateBall()
 
   Gravity += 90 * 0.1;
   // Update the velocity
-  ball.dx += Gravity * 0.01; // FIXME use actual deltaTime
+  ball.dx += Gravity * 0.01;
   // Update the position
   ball.x += ball.dx * 0.01;
   ball.y += ball.dy * 0.01;
 
   // Resolve any collisions
-  CollideBall();
+  CollideBall(ball, Paddle_y_pos);
 
   // Erase ball after moving
   EraseRect(oldX, oldY, ball.x, ball.y, BallSize);
@@ -154,8 +155,8 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
     break;
 
   case PING_MOVE:
-    updatePaddle(Joystick_input);
-    updateBall();
+    Paddle_y_pos = updatePaddle(Joystick_input, Paddle_y_pos);
+    updateBall(ball, Gravity);
 
     if (ball.x <= 0)
     {
@@ -168,6 +169,7 @@ PingState PingUpdateFSM(PingState curState, struct Joystick_input Joystick_input
     break;
   case PING_GAME_OVER:
     displayGameOver();
+    nextState = PING_GAME_OVER;
     break;
   }
   return nextState;
@@ -203,7 +205,6 @@ void displayPingLossCutscene()
   ballColor = RED;
   drawBall(ball.x, ball.y);
   delay(500);
-  petWDT();
   // erase ball
   gfx->fillRect(ball.x, ball.y, BallSize, BallSize, ballColor);
 
@@ -237,7 +238,7 @@ void displayGameOver()
 /*!
   @brief  Adjusts the ball's velocity after a collision with paddle or back wall
 */
-void horizontalBounce()
+void horizontalBounce(Ball &ball)
 {
   ball.dx *= -ball.bounciness;
   Gravity *= -1;
@@ -245,14 +246,14 @@ void horizontalBounce()
 /*!
   @brief Update Game variables after a collision with walls or paddle according to physics of game
 */
-void CollideBall()
+void CollideBall(Ball &ball, int &Paddle_y_pos)
 {
   if (ball.x <= PaddleWidth)
   {
     if (ball.y >= Paddle_y_pos - BallSize && ball.y <= Paddle_y_pos + PaddleHeight)
     {
       // Colliding with paddle
-      horizontalBounce();
+      horizontalBounce(ball);
       ball.x = PaddleWidth + 1;
       // Adjust dy depending on paddle hit location
       float centerYDiff = (ball.y + BallSize / 2) - (Paddle_y_pos + PaddleHeight / 2);
@@ -267,7 +268,7 @@ void CollideBall()
   else if (ball.x >= screenWidth - BackWallThickness - BallSize)
   {
     // Colliding with back wall
-    horizontalBounce();
+    horizontalBounce(ball);
     ball.x = screenWidth - BackWallThickness - BallSize - 1;
     float rand = (random(0, 1024) * (80 / 1024)) - 40;
     ball.dy += rand;

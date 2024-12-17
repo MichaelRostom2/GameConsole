@@ -24,10 +24,12 @@ struct Player
 };
 
 extern DodgeState DODGE_CURRENT_STATE;
+extern const int maxBullets;
+extern Bullet bullets[30];
 
 bool checkCollision(Bullet bullet, Player player);
 void drawPlayer();
-void updatePlayer(struct Joystick_input Joystick_input);
+void updatePlayer(struct Joystick_input Joystick_input, Player &player);
 void spawnBullet();
 void updateBullets();
 void eraseBullet(Bullet bullet);

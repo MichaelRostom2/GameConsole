@@ -3,7 +3,7 @@ import time
 import json
 
 SCORE_FILE = "scores.json"
-
+# loades scores from file
 def load_scores():
     try:
         with open(SCORE_FILE, "r") as file:
@@ -45,7 +45,7 @@ def process_command(command, scores, ser):
             response = f"CMD:SCORE {game} {current_score}\n"
             ser.write(response.encode())
             print(f"Sent: {response.strip()}")
-
+# Main function
 def main():
     scores = load_scores()
 
@@ -64,6 +64,6 @@ def main():
         save_scores(scores)
     finally:
         ser.close()
-
+# Run the main function
 if __name__ == "__main__":
     main()
