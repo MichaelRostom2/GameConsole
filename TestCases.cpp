@@ -7,6 +7,8 @@ int testingPaddle_y_pos = 0;
 
 bool testAllTests()
 {
+    delay(1000);
+    Serial.println("Running all tests; ignore intermediate output...");
     if (!horizontalBounceTest() || !collideBallTest() || !updateBallTest() || !updatePaddleTest() || !pingUpdateFSMTest() || !updatePlayerTest() || !checkCollisionTest() || !spawnBulletTest() || !updateBulletsTest() || !switchToPingTest() || !switchToDodgeTest() || !updateFSMTest() || !DodgeUpdateFSMTest() || !resetISRTest() || !homeISRTest() || !processReponseTest())
     {
         return false;
