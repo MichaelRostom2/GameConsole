@@ -1,4 +1,4 @@
-#include "GameConsole.h"
+#include "../Firmware/GameConsole.h"
 bool testAllTests();
 bool horizontalBounceTest();
 bool collideBallTest();
