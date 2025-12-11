@@ -4,7 +4,7 @@
 **Course:** CS1600 (Embedded Systems), Fall 2024
 
 ![Gameplay Demo](Docs/Assets/gameplay-demo.gif)
-*(Above: "Dodge" game mode running at 75 FPS on Renesas RA4M1 via custom SPI drivers)*
+*(Above: "Dodge" game mode running at 75 FPS on Arduino Uno R4 Renesas RA4M1 via custom SPI drivers)*
 
 ## Project Overview
 This project is a hybrid embedded system featuring a handheld game console that communicates with a desktop Python backend. We bypassed high-level Arduino libraries to manipulate CPU registers directly, achieving sub-millisecond input latency and fluid 75Hz rendering on constrained hardware.
