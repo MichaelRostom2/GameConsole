@@ -1,61 +1,70 @@
+# Retro Game Console & IoT Bridge
 
-# GameConsole
-A CS1600 Project for Fall 2024. By Henry Earnest, Michael Rostom, and Nathan Kim.
+**Authors:** Henry Earnest, Michael Rostom, Nathan Kim  
+**Course:** CS1600 (Embedded Systems), Fall 2024
 
+![Gameplay Demo](Docs/Assets/gameplay-demo.gif)
+*(Above: "Dodge" game mode running at 75 FPS on Renesas RA4M1 via custom SPI drivers)*
 
+## Project Overview
+This project is a hybrid embedded system featuring a handheld game console that communicates with a desktop Python backend. We bypassed high-level Arduino libraries to manipulate CPU registers directly, achieving sub-millisecond input latency and fluid 75Hz rendering on constrained hardware.
 
+For a detailed technical breakdown, please read the [Project Report](Docs/Project%20Report.pdf).
 
-![Flier](Docs/Assets/game-console-slide.png)
+### Key Engineering Features
+* **Graphics Optimization:** Implemented a "Dirty Rectangle" rendering algorithm to redraw only changed pixels, reducing SPI bus load by ~85% compared to full-frame clearing.
+* **System Reliability:** Utilized Watchdog Timers (WDT) and hardware interrupts (ISRs) to prevent freeze states and ensure fault recovery.
+* **Full-Stack Integration:** Built a custom UART serial protocol to sync live game state with a Python script (`UART-Laptop.py`), persisting high scores to a local JSON database.
+* **Architecture:** Designed a scalable Finite State Machine (FSM) to manage memory and logic transitions between game modes.
 
-Read "Project Report.pdf" for detailed information on the project!
+---
 
-## Materials needed
-- 1 Arduino Uno R4 Wifi
-- 1 ILI9341 TFT LCD display
-- 2 Buttons
-- 1 Joystick
+## System Architecture
+The system follows a modular architecture separating the Physics Engine, Display Drivers, and Input Interrupts.
 
+![Architecture Diagram](Docs/Assets/architecture-diagram.png)
 
-## Wiring
-#### Screen: 
-- Wire up DC into Arduino's pin 8.
-- Wire up RST into Arduino's pin 9.
-- Wire up CS into Arduino's pin 10.
-- Wire up MOSI into Arduino's pin 11.
-- Wire up SCK into Arduino's pin 13
+### Key Files
+* `GameConsole.cpp`: Main entry point and rendering logic.
+* `watchdog_utils.cpp`: Direct register manipulation for WDT and Interrupts.
+* `UART-Laptop.py`: Python backend for serial communication and data persistence.
 
-#### Home Button:
-- Wire up into Arduino's pin 3.
+---
 
-#### Reset Button:
-- Wire up into Arduino's pin 2.
+## Hardware & Setup
 
+**Materials Needed:**
+* 1 Arduino Uno R4 Wifi (Renesas RA4M1)
+* 1 ILI9341 TFT LCD display
+* 2 Buttons (Home/Reset)
+* 1 Joystick
 
-#### Joystick: 
-- Wire up VRX into Arduino's A0.
-- Wire up VRY into Arduino's A1.
+**Wiring Configuration:**
 
+| Component | Pin Function | Arduino Pin |
+| :--- | :--- | :--- |
+| **Screen** | DC | 8 |
+| | RST | 9 |
+| | CS | 10 |
+| | MOSI | 11 |
+| | SCK | 13 |
+| **Inputs** | Home Button | 3 |
+| | Reset Button | 2 |
+| | Joystick X | A0 |
+| | Joystick Y | A1 |
 
-## Dependencies
-#### Arduino Dependencies: 
-- Arduino_GFX Library by moononournation. (tested with version 1.5.0)
+## Build Instructions
 
-#### Python Dependencies: 
-- pySerial. (tested with version 3.4)
+**1. Flash the Firmware**
+* Open `GameConsole.cpp` in Arduino IDE.
+* Install the **Arduino_GFX** library (version 1.5.0).
+* Upload to the board.
 
-## How to run
-Open Arduino IDE and get the port at which Arduino is connected at(bottom right).
-For mac it looks something like: "dev/tty.usbmodemF412FA9F9FB02"
-For windows it looks something like: "COM6"
-replace python file 52 with your port.
+**2. Start the Backend**
+* Close the Arduino Serial Monitor (to free the USB port).
+* Update `UART-Laptop.py` (Line 52) with your device port (e.g., `COM6` or `/dev/tty...`).
+* Run the script: `python UART-Laptop.py`
 
-Compile and upload code using Arduino IDE(or other method of uploading code). Make sure Serial monitor is not opened on the Arduino IDE and run UART-Laptop.py in terminal and wait for it to say "Listening for Arduino...".
-Then you can interact with console. Enjoy Ping and Dodge!
-
-
-## FAQ
-#### What do I do if I have Joystick Drift? 
-You can calibrate the joystick by making sure offset values in GameConsole.ino are accurate so that pollInputs returns 0 for x and y when joystick is in the middle.
-
-
-
+**3. Operation**
+* Wait for the terminal output: "Listening for Arduino..."
+* High scores will automatically sync to `scores.json` in the local directory.
