@@ -4,7 +4,7 @@
 **Course:** CS1600 (Embedded Systems), Fall 2024
 
 ![Gameplay Demo](Docs/Assets/gameplay-demo.gif)
-*(Above: "Dodge" game mode running at 75 FPS on Arduino Uno R4 Renesas RA4M1 via custom SPI drivers)*
+*(Above: "Dodge" game mode running at high FPS on Arduino Uno R4)*
 
 ## Project Overview
 This project is a hybrid embedded system featuring a handheld game console that communicates with a desktop Python backend. We bypassed high-level Arduino libraries to manipulate CPU registers directly, achieving sub-millisecond input latency and fluid 75Hz rendering on constrained hardware.
@@ -68,3 +68,7 @@ The system follows a modular architecture separating the Physics Engine, Display
 **3. Operation**
 * Wait for the terminal output: "Listening for Arduino..."
 * High scores will automatically sync to `scores.json` in the local directory.
+
+
+## Project Slide (By Henry)
+![Project Presentation Slide](Docs/Assets/game-console-slide.png)
