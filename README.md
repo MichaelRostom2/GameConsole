@@ -1,4 +1,4 @@
-# Retro Game Console & IoT Bridge
+# Retro Game Console Project
 
 **Authors:** Henry Earnest, Michael Rostom, Nathan Kim  
 **Course:** CS1600 (Embedded Systems), Fall 2024
