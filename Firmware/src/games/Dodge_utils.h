@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameConsole.h"
+#include "../GameConsole.h"
 
 typedef enum
 {

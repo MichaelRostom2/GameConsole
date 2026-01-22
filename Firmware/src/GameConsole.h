@@ -10,7 +10,7 @@
 #include "drivers/isr_utils.h"
 #include "games/Ping_utils.h"
 #include "games/Dodge_utils.h"
-#include "../Tests/TestCases.h"
+#include "../../Tests/TestCases.h"
 
 #define JOYSTICK_VRX_PIN A0 // Arduino pin connected to Joystick VRX pin
 #define JOYSTICK_VRY_PIN A1 // Arduino pin connected to Joystick VRY pin
